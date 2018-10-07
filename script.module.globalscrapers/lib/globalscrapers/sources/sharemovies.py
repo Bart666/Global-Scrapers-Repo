@@ -1,4 +1,4 @@
-#Jor-EL Addon KoDIY
+#SOLID_SNAKE Addon GlobalScrapers
 
 import base64
 import re

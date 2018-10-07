@@ -7,9 +7,9 @@
  # ----------------------------------------------------------------------------
 #######################################################################
 
-# Addon Name: Jor-EL
-# Addon id: plugin.video.jor-el
-# Addon Provider: KoDIY
+# Addon Name: SOLID_SNAKE
+# Addon id: plugin.video.SOLID_SNAKE
+# Addon Provider: GlobalScrapers
 
 import re, requests, base64, urllib, urlparse
 import resolveurl as urlresolver
