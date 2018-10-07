@@ -1,0 +1,38 @@
+#Jor-EL Addon KoDIY
+
+import re
+import urllib
+import urlparse
+from resources.lib.modules import cleantitle
+from resources.lib.modules import client
+from resources.lib.modules import proxy
+
+
+class source:
+	def __init__(self):
+		self.priority = 1
+		self.language = ['en']
+		self.domains = ['openloadmovie.ws']
+		self.base_link = 'https://openloadmovie.ws'
+
+	def movie(self, imdb, title, localtitle, aliases, year):
+		try:
+			title = cleantitle.geturl(title)
+			url = self.base_link + '/movies/%s-%s' % (title,year)
+			return url
+		except:
+			return
+			
+	def sources(self, url, hostDict, hostprDict):
+		try:
+			sources = []
+			r = client.request(url)
+			match = re.compile('<iframe class="metaframe rptss" src="(.+?)"').findall(r)
+			for url in match: 
+				sources.append({'source': 'Openload','quality': 'HD','language': 'en','url': url,'direct': False,'debridonly': False})
+		except Exception:
+			return
+		return sources
+
+	def resolve(self, url):
+		return url
