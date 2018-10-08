@@ -28,7 +28,7 @@ import xbmcaddon
 from salts_lib import dom_parser
 from salts_lib.constants import VIDEO_TYPES
 
-BASE_URL = 'http://xmovies8.tv'
+BASE_URL = 'http://www1.xmovies8.io/'
 
 class XMovies8_Scraper(scraper.Scraper):
     base_url = BASE_URL

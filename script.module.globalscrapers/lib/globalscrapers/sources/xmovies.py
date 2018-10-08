@@ -37,8 +37,8 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['xmovies8.tv', 'xmovies8.ru', 'xmovies8.es']
-        self.base_link = 'https://xmovies8.nz'
+        self.domains = ['xmovies8.io/', 'xmovies8.org', 'xmovies8.is']
+        self.base_link = 'https://xmovies8.pl/xmovies8.html'
         self.search_link = '/movies/search?s=%s'
         self.scraper = cfscrape.create_scraper()
 
