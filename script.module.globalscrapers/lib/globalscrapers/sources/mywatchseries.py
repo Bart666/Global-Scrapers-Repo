@@ -1,24 +1,9 @@
 # -*- coding: utf-8 -*-
 
-'''
-    Covenant Add-on
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
+#01010011 01001111 01001100 01001001 01000100 00100000 01010011 01001110 01000001 01001011 01000101 00100000
 
 
-import re,urllib,urlparse,json, requests
+import re,urllib,urlparse,json
 
 from resources.lib.modules import cleantitle
 from resources.lib.modules import client
@@ -30,9 +15,9 @@ class source:
         self.priority = 0
         self.language = ['en']
         self.domains = ['onwatchseries.to','mywatchseries.to']
-        self.base_link = 'http://dwatchseries.to'
-        self.search_link = 'http://dwatchseries.to/show/search-shows-json'
-        self.search_link_2 = 'http://dwatchseries.to/search/%s'
+        self.base_link = 'http://mywatchseries.to'
+        self.search_link = 'http://mywatchseries.to/show/search-shows-json'
+        self.search_link_2 = 'http://mywatchseries.to/search/%s'
 
 
     def tvshow(self, imdb, tvdb, tvshowtitle, localtvshowtitle, aliases, year):
@@ -49,7 +34,7 @@ class source:
             if r:
                 r = [(i['seo_url'], i['value'], i['label']) for i in r if 'value' in i and 'label' in i and 'seo_url' in i]
             else:
-                r = requests.get(self.search_link_2 % q, 'tv shows').text
+                r = proxy.request(self.search_link_2 % q, 'tv shows')
                 r = client.parseDOM(r, 'div', attrs = {'valign': '.+?'})
                 r = [(client.parseDOM(i, 'a', ret='href'), client.parseDOM(i, 'a', ret='title'), client.parseDOM(i, 'a')) for i in r]
                 r = [(i[0][0], i[1][0], i[2][0]) for i in r if i[0] and i[1] and i[2]]

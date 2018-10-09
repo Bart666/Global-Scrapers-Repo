@@ -1,19 +1,4 @@
-"""
-    SOLID_SNAKE Add-on
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""
+#01010011 01001111 01001100 01001001 01000100 00100000 01010011 01001110 01000001 01001011 01000101 00100000
 
 import urlparse, urllib, re, json, xbmc
 
@@ -26,7 +11,7 @@ class source:
         self.priority = 1
         self.language = ['en']
         self.domains = ['123movies.as']
-        self.base_link = 'https://www5.123movies.as/'
+        self.base_link = 'https://123movies.as'
         self.source_link = 'https://gomostream.com'
         self.episode_path = '/episodes/%s-%sx%s/'
         self.movie_path = '/movies/%s-watch-online-free-123movies/'

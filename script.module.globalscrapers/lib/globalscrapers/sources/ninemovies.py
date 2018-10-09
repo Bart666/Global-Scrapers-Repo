@@ -1,20 +1,4 @@
-'''
-    SOLID_SNAKE Add-on
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-'''
+#01010011 01001111 01001100 01001001 01000100 00100000 01010011 01001110 01000001 01001011 01000101 00100000
 import re
 import urllib
 import urlparse
@@ -35,7 +19,7 @@ class source:
         self.priority = 1
         self.language = ['en']
         self.domains = ['fmovies.se', 'fmovies.to', 'bmovies.to', 'bmovies.is']
-        self.base_link = 'http://bmovies.is'
+        self.base_link = 'https://bmovies.is'
         self.search_path = '/search?keyword=%s'
         self.film_path = '/film/%s'
         self.js_path = '/assets/min/public/all.js?5a0da8a9'

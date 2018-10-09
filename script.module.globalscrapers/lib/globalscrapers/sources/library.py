@@ -1,31 +1,12 @@
-# -*- coding: UTF-8 -*-
-#           ________
-#          _,.-Y  |  |  Y-._
-#      .-~"   ||  |  |  |   "-.
-#      I" ""=="|" !""! "|"[]""|     _____
-#      L__  [] |..------|:   _[----I" .-{"-.
-#     I___|  ..| l______|l_ [__L]_[I_/r(=}=-P
-#    [L______L_[________]______j~  '-=c_]/=-^
-#     \_I_j.--.\==I|I==_/.--L_]
-#       [_((==)[`-----"](==)j
-#          I--I"~~"""~~"I--I
-#          |[]|         |[]|
-#          l__j         l__j
-#         |!!|         |!!|
-#          |..|         |..|
-#          ([])         ([])
-#          ]--[         ]--[
-#          [_L]         [_L]
-#         /|..|\       /|..|\
-#        `=}--{='     `=}--{='
-#       .-^--r-^-.   .-^--r-^-.
-# Resistance is futile @lock_down... 
+# -*- coding: utf-8 -*-
 
-import urllib,traceback,urlparse,json
+#01010011 01001111 01001100 01001001 01000100 00100000 01010011 01001110 01000001 01001011 01000101 00100000
+
+
+import urllib,urlparse,json
 
 from resources.lib.modules import control
 from resources.lib.modules import cleantitle
-from resources.lib.modules import log_utils
 
 class source:
     def __init__(self):
@@ -37,16 +18,12 @@ class source:
         try:
             return urllib.urlencode({'imdb': imdb, 'title': title, 'localtitle': localtitle,'year': year})
         except:
-            failure = traceback.format_exc()
-            log_utils.log('Library - Exception: \n' + str(failure))
             return
 
     def tvshow(self, imdb, tvdb, tvshowtitle, localtvshowtitle, aliases, year):
         try:
             return urllib.urlencode({'imdb': imdb, 'tvdb': tvdb, 'tvshowtitle': tvshowtitle, 'localtvshowtitle': localtvshowtitle, 'year': year})
         except:
-            failure = traceback.format_exc()
-            log_utils.log('Library - Exception: \n' + str(failure))
             return
 
     def episode(self, url, imdb, tvdb, title, premiered, season, episode):
@@ -59,8 +36,6 @@ class source:
             url.update({'premiered': premiered, 'season': season, 'episode': episode})
             return urllib.urlencode(url)
         except:
-            failure = traceback.format_exc()
-            log_utils.log('Library - Exception: \n' + str(failure))
             return
 
     def sources(self, url, hostDict, hostprDict):
@@ -93,16 +68,15 @@ class source:
                 r = unicode(r, 'utf-8', errors='ignore')
                 r = json.loads(r)['result']['moviedetails']
             elif content_type == 'episode':
-                title = cleantitle.get(data['tvshowtitle'])
-                localtitle = cleantitle.get(data['localtvshowtitle'])
+                title = data['tvshowtitle']
+                localtitle = data['localtvshowtitle']
                 season, episode = data['season'], data['episode']
-                ids = [data['imdb'], data['tvdb']]
 
                 r = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetTVShows", "params": {"filter":{"or": [{"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}, {"field": "year", "operator": "is", "value": "%s"}]}, "properties": ["imdbnumber", "title"]}, "id": 1}' % years)
                 r = unicode(r, 'utf-8', errors='ignore')
                 r = json.loads(r)['result']['tvshows']
 
-                r = [i for i in r if str(i['imdbnumber']) in ids or title in [cleantitle.get(i['title'].encode('utf-8')), cleantitle.get(i['originaltitle'].encode('utf-8'))]][0]
+                r = [i for i in r if title in (i['title'].encode('utf-8'))][0]
 
                 r = control.jsonrpc('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodes", "params": {"filter":{"and": [{"field": "season", "operator": "is", "value": "%s"}, {"field": "episode", "operator": "is", "value": "%s"}]}, "properties": ["file"], "tvshowid": %s }, "id": 1}' % (str(season), str(episode), str(r['tvshowid'])))
                 r = unicode(r, 'utf-8', errors='ignore')
@@ -119,24 +93,41 @@ class source:
             try: quality = int(r['streamdetails']['video'][0]['width'])
             except: quality = -1
 
-            if quality >= 2160: quality = '4K'
-            if quality >= 1440: quality = '1440p'
-            if quality >= 1080: quality = '1080p'
-            if 720 <= quality < 1080: quality = 'HD'
-            if quality < 720: quality = 'SD'
+            if quality > 1920: quality = '2160p'
+            if quality >= 1920: quality = '1080p'
+            if 1280 <= quality < 1900: quality = 'HD'
+            if quality < 1280: quality = 'HQ'
 
             info = []
+
             try:
                 f = control.openFile(url) ; s = f.size() ; f.close()
                 s = '%.2f GB' % (float(s)/1024/1024/1024)
                 info.append(s)
-            except:
-                pass
+            except: pass
+
             try:
-                e = urlparse.urlparse(url).path.split('.')[-1].upper()
-                info.append(e)
-            except:
-                pass
+                c = r['streamdetails']['video'][0]['codec']
+                if c == 'avc1': c = 'h264'
+                info.append(c)
+            except: pass
+
+            try:
+                ac = r['streamdetails']['audio'][0]['codec']
+                if ac == 'dca': ac = 'dts'
+                if ac == 'dtshd_ma': ac = 'dts-hd ma'
+                info.append(ac)
+            except: pass
+
+            try:
+                ach = r['streamdetails']['audio'][0]['channels']
+                if ach == 1: ach = 'mono'
+                if ach == 2: ach = '2.0'
+                if ach == 6: ach = '5.1'
+                if ach == 8: ach = '7.1'
+                info.append(ach)
+            except: pass
+            
             info = ' | '.join(info)
             info = info.encode('utf-8')
 
@@ -144,8 +135,6 @@ class source:
 
             return sources
         except:
-            failure = traceback.format_exc()
-            log_utils.log('Library - Exception: \n' + str(failure))
             return sources
 
     def resolve(self, url):

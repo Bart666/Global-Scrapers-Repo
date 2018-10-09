@@ -1,24 +1,9 @@
-# -*- coding: utf-8 -*-
-
-'''
-    Covenant Add-on
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
+# -*- coding: UTF-8 -*-
+#######################################################################
+ #01010011 01001111 01001100 01001001 01000100 00100000 01010011 01001110 01000001 01001011 01000101 00100000
 
 
-import re,urllib,urlparse,base64
+import re,urllib,urlparse,base64,xbmc
 
 from resources.lib.modules import cleantitle
 from resources.lib.modules import client
@@ -197,5 +182,3 @@ class source:
 
     def resolve(self, url):
         return url
-
-
