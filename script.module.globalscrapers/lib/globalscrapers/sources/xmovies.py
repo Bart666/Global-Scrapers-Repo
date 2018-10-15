@@ -17,8 +17,8 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['xmovies8.tv', 'xmovies8.ru', 'xmovies8.es']
-        self.base_link = 'https://xmovies8.pl/xmovies8.html'
+        self.domains = ['xmovies8.tv', 'xmovies8.cloud', 'xmovies8.is']
+        self.base_link = 'https://xmovies8.is'
         self.search_link = '/movies/search?s=%s'
         self.scraper = cfscrape.create_scraper()
 
@@ -116,7 +116,7 @@ class source:
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36',
                 'Referer': url,
                 'Accept': 'application/json, text/javascript, */*; q=0.01',
-                'Origin': 'https://xmovies8.pl/xmovies8.html'
+                'Origin': 'https://xmovies8.is'
             }
 
             id = re.findall(r'load_player\(.+?(\d+)', p)[0]
