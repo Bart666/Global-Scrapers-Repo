@@ -16,7 +16,7 @@ class source:
         self.language = ['en']
         self.genre_filter = ['animation', 'anime']
         self.domains = ['animeultima.io']
-        self.base_link = 'http://www.animeultima.io'
+        self.base_link = 'https://www4.animeultima.eu/'
         self.search_link = '/search.html?searchquery=%s'
 
 

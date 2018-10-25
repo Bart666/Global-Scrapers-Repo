@@ -16,11 +16,11 @@ def url_ok(url):
     else: return False
 
 def HostChcker():
-    if url_ok("http://kat.tv"):
-        useurl = 'http://kat.tv'
+    if url_ok("http://www1.kat.tv/"):
+        useurl = 'http://www1.kat.tv/'
 
-    elif url_ok("http://kat.bypassed.bz"):
-        useurl = 'http://kat.bypassed.bz'
+    elif url_ok("http://www1.kat.tv/"):
+        useurl = 'http://www1.kat.tv/'
 
     else: useurl = 'http://localhost/'
     

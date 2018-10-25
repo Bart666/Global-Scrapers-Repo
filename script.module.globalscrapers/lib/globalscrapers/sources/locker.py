@@ -12,7 +12,7 @@ class source:
         self.priority = 1
         self.language = ['en']
         self.domains = ['putlocker.io']
-        self.base_link = 'http://www2.putlocker.io/'
+        self.base_link = 'https://putlocker.vip/'
         self.search_link = '/search-movies/%s.html'
         
     def movie(self, imdb, title, localtitle, aliases, year):

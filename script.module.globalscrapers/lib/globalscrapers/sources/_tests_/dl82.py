@@ -7,14 +7,14 @@ from resources.lib.modules import cleantitle
 from resources.lib.modules import client
 from resources.lib.modules import cache
 from resources.lib.modules import dom_parser2
-
+from resources.lib.modules import debrid
 
 class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['cafehulu.com']
-        self.base_link = 'http://cafehulu.com'
+        self.domains = ['dl8.heyserver.in/film/2018-10/']
+        self.base_link = 'http://dl8.heyserver.in/film/2018-10/'
         self.search_link = '/search-movies/%s.html'
 
 
@@ -85,11 +85,11 @@ class source:
                     host = host.encode('utf-8')
                     sources.append({
                         'source': host,
-                        'quality': 'SD',
+                        'quality': 'HD',
                         'language': 'en',
                         'url': url.replace('\/', '/'),
                         'direct': False,
-                        'debridonly': False
+                        'debridonly': True
                     })
                 except:
                     pass
@@ -107,11 +107,11 @@ class source:
                         if 'other'in host: continue
                         sources.append({
                             'source': host,
-                            'quality': 'SD',
+                            'quality': 'HD',
                             'language': 'en',
                             'url': url.replace('\/', '/'),
                             'direct': False,
-                            'debridonly': False
+                            'debridonly': True
                         })
                     except:
                         pass

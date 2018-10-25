@@ -17,7 +17,7 @@ class source:
         self.priority = 1
         self.language = ['en']
         self.domains = ['movie4k.is']
-        self._base_link = 'https://movie4kto.st/'
+        self._base_link = 'https://movie4k.is/'
         self.search_link = '/movies.php?list=search&search=%s'
 
     @property

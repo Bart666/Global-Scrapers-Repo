@@ -6,17 +6,16 @@ import re, urlparse, urllib, base64
 from resources.lib.modules import cleantitle
 from resources.lib.modules import client
 from resources.lib.modules import cache
-from resources.lib.modules import cfscrape
 from resources.lib.modules import dom_parser2
-
+from resources.lib.modules import debrid
 
 class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['123-netflix.com']
-        self.base_link = 'http://123-netflix.com/'
-        self.search_link = '?s=%s'
+        self.domains = ['dl8.heyserver.in/film/2018-6/']
+        self.base_link = 'http://dl8.heyserver.in/film/2018-6/'
+        self.search_link = '/search-movies/%s.html'
 
 
     def movie(self, imdb, title, localtitle, aliases, year):
@@ -86,11 +85,11 @@ class source:
                     host = host.encode('utf-8')
                     sources.append({
                         'source': host,
-                        'quality': 'SD',
+                        'quality': 'HD',
                         'language': 'en',
                         'url': url.replace('\/', '/'),
                         'direct': False,
-                        'debridonly': False
+                        'debridonly': True
                     })
                 except:
                     pass
@@ -108,11 +107,11 @@ class source:
                         if 'other'in host: continue
                         sources.append({
                             'source': host,
-                            'quality': 'SD',
+                            'quality': 'HD',
                             'language': 'en',
                             'url': url.replace('\/', '/'),
                             'direct': False,
-                            'debridonly': False
+                            'debridonly': True
                         })
                     except:
                         pass
