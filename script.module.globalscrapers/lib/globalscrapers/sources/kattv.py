@@ -1,5 +1,23 @@
-# -*- coding: UTF-8 -*-
-#01010011 01001111 01001100 01001001 01000100 00100000 01010011 01001110 01000001 01001011 01000101 00100000
+# -*- coding: utf-8 -*-
+
+'''
+    SOLID_SNAKE Scraper
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    
+    resistance
+'''
 
 import re, urlparse, urllib, base64
 
@@ -16,12 +34,14 @@ def url_ok(url):
     else: return False
 
 def HostChcker():
-    if url_ok("http://www1.kat.tv/"):
-        useurl = 'http://www1.kat.tv/'
+    if url_ok("http://kat.tv"):
+        useurl = 'http://kat.tv'
 
     elif url_ok("http://www1.kat.tv/"):
         useurl = 'http://www1.kat.tv/'
 
+	elif url_ok("http://kat.bypassed.bz"):
+        useurl = 'http://kat.bypassed.bz'	
     else: useurl = 'http://localhost/'
     
     return useurl

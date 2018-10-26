@@ -1,6 +1,21 @@
 # -*- coding: utf-8 -*-
 
-#01010011 01001111 01001100 01001001 01000100 00100000 01010011 01001110 01000001 01001011 01000101 00100000
+'''
+    SOLID_SNAKE Add-on
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+'''
 
 import re,urllib,urlparse
 
@@ -12,7 +27,7 @@ from resources.lib.modules import dom_parser2
 
 class source:
     def __init__(self):
-        self.priority = 1
+        self.priority = 0
         self.language = ['en']
         self.domains = ['ddlvalley.me']
         self.base_link = 'http://www.ddlvalley.me'
@@ -57,39 +72,52 @@ class source:
             sources = []
             
             if url == None: return sources
-     
-            if debrid.status() == False: raise Exception()
- 
+      
             data = urlparse.parse_qs(url)
 
             data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
 
             title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
+            show  = True if 'tvshowtitle' in data else False
             hdlr = 'S%02dE%02d' % (int(data['season']), int(data['episode'])) if 'tvshowtitle' in data else data['year']
-            query = '%s S%02dE%02d' % (data['tvshowtitle'], int(data['season']), int(data['episode'])) if\
+            query = '%s' % (data['tvshowtitle']) if\
                 'tvshowtitle' in data else '%s %s' % (data['title'], data['year'])
             query = re.sub('(\\\|/| -|:|;|\*|\?|"|\'|<|>|\|)', ' ', query)
-
+            
             url = self.search_link % urllib.quote_plus(query)
             url = urlparse.urljoin(self.base_link, url)
             scraper = cfscrape.create_scraper()
             r = scraper.get(url).content
+            u = r
+            
+            next_page = True
+            num = 1
+            while next_page:
+                try:
+                    np = re.findall('<link rel="next" href="([^"]+)', u)[0]
+                    # Client Requests is causing a timeout on links for ddl valley, falling back on cfscrape
+                    #u = client.request(np, headers=headers, cookie=cookie, timeout=5)  
+                    u = scraper.get(np).content
+                    r += u
+                except: next_page = False
 
             items = dom_parser2.parse_dom(r, 'h2')
             items = [dom_parser2.parse_dom(i.content, 'a', req=['href','rel','title','data-wpel-link']) for i in items]
             items = [(i[0].content, i[0].attrs['href']) for i in items]
-
-            hostDict = hostprDict + hostDict
-
+            items = [(i[0], i[1]) for i in items if cleantitle.get_simple(title.lower()) in cleantitle.get_simple(i[0].lower())]
+            
             for item in items:
                 try:
                     name = item[0]
                     name = client.replaceHTMLCodes(name)
-
-                    scraper = cfscrape.create_scraper()
-                    r = scraper.get(item[1]).content     
+                    # Client Requests is causing a timeout on links for ddl valley, falling back on cfscrape
+                    #r = client.request(item[1], headers=headers, cookie=cookie,  timeout=15)  
+                    r = scraper.get(item[1]).content
                     links = dom_parser2.parse_dom(r, 'a', req=['href','rel','data-wpel-link','target'])
                     links = [i.attrs['href'] for i in links]
+                    if show:
+                        links = [i for i in links if hdlr.lower() in i.lower()]
+                        
                     for url in links:
                         try:
                             if hdlr in name:
@@ -128,10 +156,11 @@ class source:
                                     url = url.encode('utf-8')
 
                                     host = re.findall('([\w]+[.][\w]+)$', urlparse.urlparse(url.strip().lower()).netloc)[0]
-                                    if host in hostDict: 
-                                        host = client.replaceHTMLCodes(host)
-                                        host = host.encode('utf-8')
-
+                                    host = client.replaceHTMLCodes(host)
+                                    host = host.encode('utf-8')
+                                    if host in hostDict:
+                                        sources.append({'source': host, 'quality': quality, 'language': 'en', 'url': url, 'info': info, 'direct': False, 'debridonly': False})
+                                    elif host in hostprDict: 
                                         sources.append({'source': host, 'quality': quality, 'language': 'en', 'url': url, 'info': info, 'direct': False, 'debridonly': True})
                         except:
                             pass

@@ -1,5 +1,25 @@
 # -*- coding: UTF-8 -*-
-#01010011 01001111 01001100 01001001 01000100 00100000 01010011 01001110 01000001 01001011 01000101 00100000
+#           ________
+#          _,.-Y  |  |  Y-._
+#      .-~"   ||  |  |  |   "-.
+#      I" ""=="|" !""! "|"[]""|     _____
+#      L__  [] |..------|:   _[----I" .-{"-.
+#     I___|  ..| l______|l_ [__L]_[I_/r(=}=-P
+#    [L______L_[________]______j~  '-=c_]/=-^
+#     \_I_j.--.\==I|I==_/.--L_]
+#       [_((==)[`-----"](==)j
+#          I--I"~~"""~~"I--I
+#          |[]|         |[]|
+#          l__j         l__j
+#         |!!|         |!!|
+#          |..|         |..|
+#          ([])         ([])
+#          ]--[         ]--[
+#          [_L]         [_L]
+#         /|..|\       /|..|\
+#        `=}--{='     `=}--{='
+#       .-^--r-^-.   .-^--r-^-.
+# Resistance is futile @lock_down... 
 
 import re,urllib,urlparse
 
@@ -12,7 +32,7 @@ class source:
         self.priority = 1
         self.language = ['en']
         self.domains = ['go.myvideolinks.net','newmyvideolink.xyz', 'beta.myvideolinks.xyz', 'videolinks.ga', 'myvideolinks.ga', 'ezfile.xyz', 'dl.myvideolinks.net']
-        self.base_link = 'http://iwantmyshow.tk/906/'
+        self.base_link = 'http://iwantmyshow.net/'
         self.search_link = '/post/'
 
 

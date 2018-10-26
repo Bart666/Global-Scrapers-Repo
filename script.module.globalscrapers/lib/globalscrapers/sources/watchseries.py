@@ -1,5 +1,25 @@
 # -*- coding: UTF-8 -*-
-#01010011 01001111 01001100 01001001 01000100 00100000 01010011 01001110 01000001 01001011 01000101 00100000
+#           ________
+#          _,.-Y  |  |  Y-._
+#      .-~"   ||  |  |  |   "-.
+#      I" ""=="|" !""! "|"[]""|     _____
+#      L__  [] |..------|:   _[----I" .-{"-.
+#     I___|  ..| l______|l_ [__L]_[I_/r(=}=-P
+#    [L______L_[________]______j~  '-=c_]/=-^
+#     \_I_j.--.\==I|I==_/.--L_]
+#       [_((==)[`-----"](==)j
+#          I--I"~~"""~~"I--I
+#          |[]|         |[]|
+#          l__j         l__j
+#         |!!|         |!!|
+#          |..|         |..|
+#          ([])         ([])
+#          ]--[         ]--[
+#          [_L]         [_L]
+#         /|..|\       /|..|\
+#        `=}--{='     `=}--{='
+#       .-^--r-^-.   .-^--r-^-.
+# Resistance is futile @lock_down... 
 
 import re,urllib,urlparse,json,base64, random
 
@@ -160,7 +180,7 @@ class source:
 				links = debrid_links + links
 
 
-			# master list of hosts ResolveURL and placenta itself can resolve
+			# master list of hosts ResolveURL and resistance itself can resolve
 			# we'll check against this list to not waste connections on unsupported hosts
 			hostDict = hostDict + hostprDict
 			

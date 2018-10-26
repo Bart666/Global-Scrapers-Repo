@@ -1,10 +1,25 @@
 # -*- coding: utf-8 -*-
 
-#01010011 01001111 01001100 01001001 01000100 00100000 01010011 01001110 01000001 01001011 01000101 00100000
+'''
+    SOLID_SNAKE Add-on
+   
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+'''
 
 import requests
 import json,sys
-from resources.lib.modules import control
+#from resources.lib.modules import control
 import inspect
 
 class source:
@@ -17,13 +32,13 @@ class source:
         self.movie_link = "http://chillax.ws/movies/getMovieLink?"
         self.login_link = 'http://chillax.ws/session/login?return_url=/index'
         self.tv_link = 'http://chillax.ws/series/getTvLink?'
-        self.login_payload = {'username': control.setting('chillax.username'),'password':control.setting('chillax.password')}
-        if self.login_payload['username'] == '':
-            self.login_payload = {'username': 'notreal33','password':'notreal3333'}
+      #  self.login_payload = {'username': control.setting('chillax.username'),'password':control.setting('chillax.password')}
+        self.login_payload = {'username': 'notreal33','password':'notreal3333'}
 
     def movie(self, imdb, title, localtitle, aliases, year):
         url = {'imdb': imdb, 'title': title, 'year': year}
         with requests.Session() as s:
+            if (self.login_payload['username'] == '' and self.login_payload['password'] == ''): return ''
             p = s.post(self.login_link, self.login_payload)
             p = s.get(self.search_link + title)
             show_dict = json.loads(p.text)
@@ -61,6 +76,7 @@ class source:
 
     def episode(self, url, imdb, tvdb, title, premiered, season, episode):
          with requests.Session() as s:
+            if (self.login_payload['username'] == '' and self.login_payload['password'] == ''): return ''
             p = s.post(self.login_link, self.login_payload)
             search_text = url
             p = s.get(self.search_link + search_text)
@@ -86,6 +102,7 @@ class source:
                 video['info'] = i['type']
                 video['direct'] = True
                 sources.append(video)
+
             return sources
 
     def sources(self, url, hostDict, hostprDict):
@@ -94,3 +111,6 @@ class source:
     def resolve(self, url):
             return url
 
+#url = source.movie(source(), '', 'The Shape Of Water','','' '','2017')
+#url = source.episode(source(),url,'', '', '', '', '4', '1')
+#sources = source.sources(source(),url,'','')

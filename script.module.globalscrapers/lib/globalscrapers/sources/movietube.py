@@ -1,4 +1,15 @@
-#01010011 01001111 01001100 01001001 01000100 00100000 01010011 01001110 01000001 01001011 01000101 00100000
+# -*- coding: UTF-8 -*-
+ # ----------------------------------------------------------------------------
+ # "THE BEER-WARE LICENSE" (Revision 42):
+ # @tantrumdev wrote this file.  As long as you retain this notice you
+ # can do whatever you want with this stuff. If we meet some day, and you think
+ # this stuff is worth it, you can buy me a beer in return. - Muad'Dib
+ # ----------------------------------------------------------------------------
+
+
+# Addon Name: SOLID_SNAKE
+# Addon id: plugin.video.SOLID_SNAKE
+# Addon Provider: GlobalScrapers
 
 import re,urllib,urlparse
 
@@ -6,7 +17,6 @@ from resources.lib.modules import cleantitle
 from resources.lib.modules import client
 from resources.lib.modules import directstream
 from resources.lib.modules import source_utils
-from resources.lib.modules import debrid
 
 
 class source:

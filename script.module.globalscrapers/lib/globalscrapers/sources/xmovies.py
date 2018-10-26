@@ -1,5 +1,25 @@
 # -*- coding: UTF-8 -*-
-#01010011 01001111 01001100 01001001 01000100 00100000 01010011 01001110 01000001 01001011 01000101 00100000
+#           ________
+#          _,.-Y  |  |  Y-._
+#      .-~"   ||  |  |  |   "-.
+#      I" ""=="|" !""! "|"[]""|     _____
+#      L__  [] |..------|:   _[----I" .-{"-.
+#     I___|  ..| l______|l_ [__L]_[I_/r(=}=-P
+#    [L______L_[________]______j~  '-=c_]/=-^
+#     \_I_j.--.\==I|I==_/.--L_]
+#       [_((==)[`-----"](==)j
+#          I--I"~~"""~~"I--I
+#          |[]|         |[]|
+#          l__j         l__j
+#         |!!|         |!!|
+#          |..|         |..|
+#          ([])         ([])
+#          ]--[         ]--[
+#          [_L]         [_L]
+#         /|..|\       /|..|\
+#        `=}--{='     `=}--{='
+#       .-^--r-^-.   .-^--r-^-.
+# Resistance is futile @lock_down... 
 
 
 import re,urlparse,json, traceback, urllib, time
@@ -17,8 +37,8 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['xmovies8.tv', 'xmovies8.cloud', 'xmovies8.is']
-        self.base_link = 'https://xmovies8.is'
+        self.domains = ['xmovies8.tv', 'xmovies8.ru', 'xmovies8.es']
+        self.base_link = 'https://xmovies8.nz'
         self.search_link = '/movies/search?s=%s'
         self.scraper = cfscrape.create_scraper()
 
@@ -116,7 +136,7 @@ class source:
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36',
                 'Referer': url,
                 'Accept': 'application/json, text/javascript, */*; q=0.01',
-                'Origin': 'https://xmovies8.is'
+                'Origin': 'https://xmovies8.nu'
             }
 
             id = re.findall(r'load_player\(.+?(\d+)', p)[0]
