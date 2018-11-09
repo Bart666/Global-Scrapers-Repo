@@ -1,32 +1,10 @@
-# -*- coding: UTF-8 -*-
-#           ________
-#          _,.-Y  |  |  Y-._
-#      .-~"   ||  |  |  |   "-.
-#      I" ""=="|" !""! "|"[]""|     _____
-#      L__  [] |..------|:   _[----I" .-{"-.
-#     I___|  ..| l______|l_ [__L]_[I_/r(=}=-P
-#    [L______L_[________]______j~  '-=c_]/=-^
-#     \_I_j.--.\==I|I==_/.--L_]
-#       [_((==)[`-----"](==)j
-#          I--I"~~"""~~"I--I
-#          |[]|         |[]|
-#          l__j         l__j
-#         |!!|         |!!|
-#          |..|         |..|
-#          ([])         ([])
-#          ]--[         ]--[
-#          [_L]         [_L]
-#         /|..|\       /|..|\
-#        `=}--{='     `=}--{='
-#       .-^--r-^-.   .-^--r-^-.
-# Resistance is futile @lock_down... 
+
 
 import re
 import urllib
 import urlparse
 import json
 import base64
-
 from resources.lib.modules import client, cleantitle, directstream, dom_parser2
 from resources.lib.modules import debrid
 

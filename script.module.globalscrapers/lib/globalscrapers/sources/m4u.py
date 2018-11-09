@@ -1,38 +1,18 @@
-# -*- coding: UTF-8 -*-
-#           ________
-#          _,.-Y  |  |  Y-._
-#      .-~"   ||  |  |  |   "-.
-#      I" ""=="|" !""! "|"[]""|     _____
-#      L__  [] |..------|:   _[----I" .-{"-.
-#     I___|  ..| l______|l_ [__L]_[I_/r(=}=-P
-#    [L______L_[________]______j~  '-=c_]/=-^
-#     \_I_j.--.\==I|I==_/.--L_]
-#       [_((==)[`-----"](==)j
-#          I--I"~~"""~~"I--I
-#          |[]|         |[]|
-#          l__j         l__j
-#         |!!|         |!!|
-#          |..|         |..|
-#          ([])         ([])
-#          ]--[         ]--[
-#          [_L]         [_L]
-#         /|..|\       /|..|\
-#        `=}--{='     `=}--{='
-#       .-^--r-^-.   .-^--r-^-.
-# Resistance is futile @lock_down... 
 
-import re,traceback,urllib,urlparse,json,base64,time
+
+import re,urllib,urlparse,json,base64,time
 
 from resources.lib.modules import cleantitle
 from resources.lib.modules import dom_parser2
 from resources.lib.modules import client
+from resources.lib.modules import debrid
 
 class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['m4ufree.tv']
-        self.base_link = 'http://m4ufree.tv/'
+        self.domains = ['m4ufree.net']
+        self.base_link = 'http://m4ufree.net'
         self.search_link = '/watch/%s-%s-online-m4ufree.html'
         
     def movie(self, imdb, title, localtitle, aliases, year):

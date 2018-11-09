@@ -1,25 +1,4 @@
-# -*- coding: UTF-8 -*-
-#           ________
-#          _,.-Y  |  |  Y-._
-#      .-~"   ||  |  |  |   "-.
-#      I" ""=="|" !""! "|"[]""|     _____
-#      L__  [] |..------|:   _[----I" .-{"-.
-#     I___|  ..| l______|l_ [__L]_[I_/r(=}=-P
-#    [L______L_[________]______j~  '-=c_]/=-^
-#     \_I_j.--.\==I|I==_/.--L_]
-#       [_((==)[`-----"](==)j
-#          I--I"~~"""~~"I--I
-#          |[]|         |[]|
-#          l__j         l__j
-#         |!!|         |!!|
-#          |..|         |..|
-#          ([])         ([])
-#          ]--[         ]--[
-#          [_L]         [_L]
-#         /|..|\       /|..|\
-#        `=}--{='     `=}--{='
-#       .-^--r-^-.   .-^--r-^-.
-# Resistance is futile @lock_down... 
+
 
 
 import re,traceback,urllib,urlparse,json
@@ -37,7 +16,7 @@ class source:
         self.language = ['en']
         self.genre_filter = ['animation', 'anime']
         self.domains = ['gogoanimemobile.com', 'gogoanimemobile.net', 'gogoanime.io']
-        self.base_link = 'https://www2.gogoanime.se/'
+        self.base_link = 'http://ww1.gogoanime.io'
         self.search_link = '/search.html?keyword=%s'
         self.episode_link = '/%s-episode-%s'
 

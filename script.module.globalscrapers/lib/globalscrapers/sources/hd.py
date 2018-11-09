@@ -1,25 +1,4 @@
-# -*- coding: UTF-8 -*-
-#           ________
-#          _,.-Y  |  |  Y-._
-#      .-~"   ||  |  |  |   "-.
-#      I" ""=="|" !""! "|"[]""|     _____
-#      L__  [] |..------|:   _[----I" .-{"-.
-#     I___|  ..| l______|l_ [__L]_[I_/r(=}=-P
-#    [L______L_[________]______j~  '-=c_]/=-^
-#     \_I_j.--.\==I|I==_/.--L_]
-#       [_((==)[`-----"](==)j
-#          I--I"~~"""~~"I--I
-#          |[]|         |[]|
-#          l__j         l__j
-#         |!!|         |!!|
-#          |..|         |..|
-#          ([])         ([])
-#          ]--[         ]--[
-#          [_L]         [_L]
-#         /|..|\       /|..|\
-#        `=}--{='     `=}--{='
-#       .-^--r-^-.   .-^--r-^-.
-# Resistance is futile @lock_down... 
+
 
 import re,traceback,urlparse,urllib,base64
 
@@ -33,7 +12,7 @@ class source:
         self.priority = 1
         self.language = ['en']
         self.domains = ['hd.today']
-        self.base_link = 'http://www3.hd.today/'
+        self.base_link = 'http://hd.today'
         self.search_link = '/search-movies/%s.html'
 
 

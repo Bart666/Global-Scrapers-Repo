@@ -1,42 +1,38 @@
-# -*- coding: UTF-8 -*-
-#           ________
-#          _,.-Y  |  |  Y-._
-#      .-~"   ||  |  |  |   "-.
-#      I" ""=="|" !""! "|"[]""|     _____
-#      L__  [] |..------|:   _[----I" .-{"-.
-#     I___|  ..| l______|l_ [__L]_[I_/r(=}=-P
-#    [L______L_[________]______j~  '-=c_]/=-^
-#     \_I_j.--.\==I|I==_/.--L_]
-#       [_((==)[`-----"](==)j
-#          I--I"~~"""~~"I--I
-#          |[]|         |[]|
-#          l__j         l__j
-#         |!!|         |!!|
-#          |..|         |..|
-#          ([])         ([])
-#          ]--[         ]--[
-#          [_L]         [_L]
-#         /|..|\       /|..|\
-#        `=}--{='     `=}--{='
-#       .-^--r-^-.   .-^--r-^-.
-# Resistance is futile @lock_down... 
+'''
+    Yoda Add-on
+    Copyright (C) 2016 Yoda
 
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+'''
 import re
 import urllib
 import urlparse
 import json
 
-from resources.lib.modules import client
-from resources.lib.modules import cleantitle
-from resources.lib.modules import directstream
-from resources.lib.modules import log_utils
+from resources.lib.modules import client, cleantitle, directstream
 
 class source:
     def __init__(self):
+        '''
+        Constructor defines instances variables
+
+        '''
         self.priority = 1
         self.language = ['en']
-        self.domains = ['moviesgolds.net', 'moviesonlinegold.com']
-        self.base_link = 'https://www.moviesonlinegold.com/'
+        self.domains = ['moviesgolds.net']
+        self.base_link = 'http://www.moviesgolds.net'
         self.search_path = ('?s=%s')
 
     def movie(self, imdb, title, localtitle, aliases, year):

@@ -1,25 +1,4 @@
-# -*- coding: UTF-8 -*-
-#           ________
-#          _,.-Y  |  |  Y-._
-#      .-~"   ||  |  |  |   "-.
-#      I" ""=="|" !""! "|"[]""|     _____
-#      L__  [] |..------|:   _[----I" .-{"-.
-#     I___|  ..| l______|l_ [__L]_[I_/r(=}=-P
-#    [L______L_[________]______j~  '-=c_]/=-^
-#     \_I_j.--.\==I|I==_/.--L_]
-#       [_((==)[`-----"](==)j
-#          I--I"~~"""~~"I--I
-#          |[]|         |[]|
-#          l__j         l__j
-#         |!!|         |!!|
-#          |..|         |..|
-#          ([])         ([])
-#          ]--[         ]--[
-#          [_L]         [_L]
-#         /|..|\       /|..|\
-#        `=}--{='     `=}--{='
-#       .-^--r-^-.   .-^--r-^-.
-# Resistance is futile @lock_down... 
+
 
 import re,traceback,urllib,urlparse,base64
 import requests
@@ -36,8 +15,8 @@ class source:
         self.priority = 1
         self.language = ['en']
         self.domains = ['cooltvseries.com']
-        self.base_link = 'https://cooltvseries.com/'
-        self.show_link = '/%s/%s/season-%s/'
+        self.base_link = 'https://cooltvseries.com'
+        self.show_link = '%s/%s/season-%s/'
 
     def tvshow(self, imdb, tvdb, tvshowtitle, localtvshowtitle, aliases, year):
         try:
@@ -58,7 +37,7 @@ class source:
             start_url = self.show_link  % (self.base_link,tvshowtitle,season)
 
             html = client.request(start_url)
-            container = client.parseDOM(html, 'div', attrs={'class':'dwn-box'})[1]
+            container = client.parseDOM(html, 'div', attrs={'class':'dwn-box'})[0]
             Links = client.parseDOM(container, 'a', ret='href')
 
             for epi_url in Links:

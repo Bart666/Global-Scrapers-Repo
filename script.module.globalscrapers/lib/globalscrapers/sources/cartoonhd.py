@@ -1,25 +1,4 @@
-# -*- coding: UTF-8 -*-
-#           ________
-#          _,.-Y  |  |  Y-._
-#      .-~"   ||  |  |  |   "-.
-#      I" ""=="|" !""! "|"[]""|     _____
-#      L__  [] |..------|:   _[----I" .-{"-.
-#     I___|  ..| l______|l_ [__L]_[I_/r(=}=-P
-#    [L______L_[________]______j~  '-=c_]/=-^
-#     \_I_j.--.\==I|I==_/.--L_]
-#       [_((==)[`-----"](==)j
-#          I--I"~~"""~~"I--I
-#          |[]|         |[]|
-#          l__j         l__j
-#         |!!|         |!!|
-#          |..|         |..|
-#          ([])         ([])
-#          ]--[         ]--[
-#          [_L]         [_L]
-#         /|..|\       /|..|\
-#        `=}--{='     `=}--{='
-#       .-^--r-^-.   .-^--r-^-.
-# Resistance is futile @lock_down... 
+
 
 import re,traceback,urllib,urlparse,json,base64,time,xbmc
 
@@ -33,8 +12,8 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['putlocker.systems', 'cartoonhd.website', 'cartoonhd.press']
-        self.base_link = 'https://cartoonhd.press/'
+        self.domains = ['cartoonhd.care']
+        self.base_link = 'https://cartoonhd.care'
 
     def movie(self, imdb, title, localtitle, aliases, year):
         try:
@@ -74,7 +53,7 @@ class source:
     def searchShow(self, title, season, episode, aliases, headers):
         try:
             for alias in aliases:
-                url = '%s/tv-series/%s/season/%01d/episode/%01d' % (self.base_link, cleantitle.geturl(title), int(season), int(episode))
+                url = '%s/show/%s/season/%01d/episode/%01d' % (self.base_link, cleantitle.geturl(title), int(season), int(episode))
                 url = client.request(url, headers=headers,output='geturl', timeout='10')
                 if not url == None and url != self.base_link: break
             return url
@@ -86,12 +65,12 @@ class source:
     def searchMovie(self, title, year, aliases, headers):
         try:
             for alias in aliases:
-                url = '%s/film/%s' % (self.base_link, cleantitle.geturl(alias['title']))
+                url = '%s/full-movie/%s' % (self.base_link, cleantitle.geturl(alias['title']))
                 url = client.request(url, headers=headers, output='geturl', timeout='10')
                 if not url == None and url != self.base_link: break
             if url == None:
                 for alias in aliases:
-                    url = '%s/film/%s-%s' % (self.base_link, cleantitle.geturl(alias['title']), year)
+                    url = '%s/full-movie/%s-%s' % (self.base_link, cleantitle.geturl(alias['title']), year)
                     url = client.request(url, headers=headers, output='geturl', timeout='10')
                     if not url == None and url != self.base_link: break
 

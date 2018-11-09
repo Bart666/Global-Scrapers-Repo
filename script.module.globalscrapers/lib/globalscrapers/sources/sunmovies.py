@@ -1,25 +1,4 @@
-# -*- coding: UTF-8 -*-
-#           ________
-#          _,.-Y  |  |  Y-._
-#      .-~"   ||  |  |  |   "-.
-#      I" ""=="|" !""! "|"[]""|     _____
-#      L__  [] |..------|:   _[----I" .-{"-.
-#     I___|  ..| l______|l_ [__L]_[I_/r(=}=-P
-#    [L______L_[________]______j~  '-=c_]/=-^
-#     \_I_j.--.\==I|I==_/.--L_]
-#       [_((==)[`-----"](==)j
-#          I--I"~~"""~~"I--I
-#          |[]|         |[]|
-#          l__j         l__j
-#         |!!|         |!!|
-#          |..|         |..|
-#          ([])         ([])
-#          ]--[         ]--[
-#          [_L]         [_L]
-#         /|..|\       /|..|\
-#        `=}--{='     `=}--{='
-#       .-^--r-^-.   .-^--r-^-.
-# Resistance is futile @lock_down... 
+
 
 import re, urlparse, urllib, base64
 
@@ -27,7 +6,6 @@ from resources.lib.modules import cleantitle
 from resources.lib.modules import client
 from resources.lib.modules import cache
 from resources.lib.modules import dom_parser2
-from resources.lib.modules import cfscrape
 
 
 class source:
@@ -35,14 +13,12 @@ class source:
         self.priority = 1
         self.language = ['en']
         self.domains = ['sunmovies.net']
-        self.base_link = 'http://sunmovies.net/'
+        self.base_link = 'http://sunmovies.net'
         self.search_link = '/search-movies/%s.html'
-        self.scraper = cfscrape.create_scraper()
 
 
     def movie(self, imdb, title, localtitle, aliases, year):
         try:
-            scraper = cfscrape.create_scraper()
             clean_title = cleantitle.geturl(title)
             search_url = urlparse.urljoin(self.base_link, self.search_link % clean_title.replace('-', '+'))
             r = cache.get(client.request, 1, search_url)
@@ -99,7 +75,6 @@ class source:
             sources = []
             r = cache.get(client.request, 1, url)
             try:
-                scraper = cfscrape.create_scraper()
                 v = re.findall('document.write\(Base64.decode\("(.+?)"\)', r)[0]
                 b64 = base64.b64decode(v)
                 url = client.parseDOM(b64, 'iframe', ret='src')[0]

@@ -1,22 +1,4 @@
 
-'''
-    SOLID_SNAKE
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
-
-
 import re,urllib,urlparse,json,base64
 
 from resources.lib.modules import cleantitle
@@ -26,9 +8,27 @@ from resources.lib.modules import jsunfuck
 from resources.lib.modules import source_utils
 from resources.lib.modules import dom_parser
 from resources.lib.modules import log_utils
-from resources.lib.modules import debrid
 
-
+CODE = '''def retA():
+    class Infix:
+        def __init__(self, function):
+            self.function = function
+        def __ror__(self, other):
+            return Infix(lambda x, self=self, other=other: self.function(other, x))
+        def __or__(self, other):
+            return self.function(other)
+        def __rlshift__(self, other):
+            return Infix(lambda x, self=self, other=other: self.function(other, x))
+        def __rshift__(self, other):
+            return self.function(other)
+        def __call__(self, value1, value2):
+            return self.function(value1, value2)
+    def my_add(x, y):
+        try: return x + y
+        except Exception: return str(x) + str(y)
+    x = Infix(my_add)
+    return %s
+param = retA()'''
 
 class source:
     def __init__(self):

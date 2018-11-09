@@ -1,180 +1,180 @@
-# -*- coding: UTF-8 -*-
-#           ________
-#          _,.-Y  |  |  Y-._
-#      .-~"   ||  |  |  |   "-.
-#      I" ""=="|" !""! "|"[]""|     _____
-#      L__  [] |..------|:   _[----I" .-{"-.
-#     I___|  ..| l______|l_ [__L]_[I_/r(=}=-P
-#    [L______L_[________]______j~  '-=c_]/=-^
-#     \_I_j.--.\==I|I==_/.--L_]
-#       [_((==)[`-----"](==)j
-#          I--I"~~"""~~"I--I
-#          |[]|         |[]|
-#          l__j         l__j
-#         |!!|         |!!|
-#          |..|         |..|
-#          ([])         ([])
-#          ]--[         ]--[
-#          [_L]         [_L]
-#         /|..|\       /|..|\
-#        `=}--{='     `=}--{='
-#       .-^--r-^-.   .-^--r-^-.
-# Resistance is futile @lock_down... 
 
 
-import re,base64, requests, sys, urllib
-from resources.lib.modules import jsunpack
+
+import re,traceback,urllib,urlparse,json,base64,time,xbmc
+
 from resources.lib.modules import cleantitle
-from bs4 import BeautifulSoup
-
-from resources.lib.modules import cfscrape
-
-def streamdor(html, src, olod):
-    source = ''
-    try:
-        with requests.Session() as s:
-            episodeId = re.findall('.*streamdor.co/video/(\d+)', html)[0]
-            p = s.get('https://embed.streamdor.co/video/' + episodeId, headers={'referer': src})
-            p = re.findall(r'JuicyCodes.Run\(([^\)]+)', p.text, re.IGNORECASE)[0]
-            p = re.sub(r'\"\s*\+\s*\"', '', p)
-            p = re.sub(r'[^A-Za-z0-9+\\/=]', '', p)
-            p = base64.b64decode(p)
-            p = jsunpack.unpack(p.decode('utf-8'))
-            qual = 'SD'
-            try:
-                qual = re.findall(r'label:"(.*?)"', p)[0]
-            except:
-                pass
-            try:
-                url = re.findall(r'(https://streamango.com/embed/.*?)"', p, re.IGNORECASE)[0]
-                source = "streamango.com"
-                details = {'source': source, 'quality': qual, 'language': "en", 'url': url, 'info': '',
-                           'direct': False, 'debridonly': False}
-            except:
-                if olod == True:
-                    url = ''
-                    source = 'openload.co'
-                    details = {'source': source, 'quality': qual, 'language': "en", 'url': url, 'info': '',
-                               'direct': False, 'debridonly': False}
-                else: return ''
-
-
-        return details
-    except:
-        print("Unexpected error in CMOVIES STREAMDOR Script:")
-        exc_type, exc_obj, exc_tb = sys.exc_info()
-        print(exc_type, exc_tb.tb_lineno)
-        return details
-
+from resources.lib.modules import client
+from resources.lib.modules import cache
+from resources.lib.modules import directstream
+from resources.lib.modules import source_utils
+from resources.lib.modules import jsunpack
 
 class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['cmovieshd.io']
-        self.base_link = 'https://www3.cmovies.io/'
-        self.tv_link = 'https://www3.cmovies.io/tv-series/'
-        self.movie_link = 'https://www3.cmovies.io/movie/'
-        self.search_link = 'https://www3.cmovies.io/search/?q='
+        self.domains = ['cmovieshd.net']
+        self.base_link = 'http://cmovieshd.net/'
+        self.search_link = 'search/?q=%s'
+
+    def matchAlias(self, title, aliases):
+        try:
+            for alias in aliases:
+                if cleantitle.get(title) == cleantitle.get(alias['title']):
+                    return True
+        except:
+            return False
 
     def movie(self, imdb, title, localtitle, aliases, year):
-        url = []
-        sources = []
-        with requests.Session() as s:
-            p = s.get(self.search_link + title + "+" + year)
-            soup = BeautifulSoup(p.text, 'html.parser').find_all('div', {'class':'movies-list'})[0]
-            soup = soup.find_all('a', {'class':'ml-mask'})
-            movie_link = ''
-            for i in soup:
-                if i['title'].lower() == title.lower() or i['title'].lower() == title.lower() + " " + year:
-                    movie_link = i['href']
-            p = s.get(movie_link +"watch")
-            soup = BeautifulSoup(p.text, 'html.parser').find_all('a', {'class': 'btn-eps'})
-            movie_links = []
-            for i in soup:
-                movie_links.append(i['href'])
-            for i in movie_links:
-                p = s.get(i)
-                if re.findall(r'http.+://openload.co/embed/.+\"', p.text):
-                    openload_link = re.findall(r'http.+://openload.co/embed/.+\"', p.text)[0].strip('"')
-                    olo_source = streamdor(p.text, i, True)
-                    olo_source['url'] = openload_link
-                    sources.append(olo_source)
-
-                else:
-                    sources.append(streamdor(p.text, i, False))
-            return sources
-
-        return sources
+        try:
+            aliases.append({'country': 'us', 'title': title})
+            url = {'imdb': imdb, 'title': title, 'year': year, 'aliases': aliases}
+            url = urllib.urlencode(url)
+            return url
+        except:
+            failure = traceback.format_exc()
+            log_utils.log('CMoviesHD - Exception: \n' + str(failure))
+            return
 
     def tvshow(self, imdb, tvdb, tvshowtitle, localtvshowtitle, aliases, year):
         try:
-            url = {'tvshowtitle':tvshowtitle, 'aliases':aliases}
+            aliases.append({'country': 'us', 'title': tvshowtitle})
+            url = {'imdb': imdb, 'tvdb': tvdb, 'tvshowtitle': tvshowtitle, 'year': year, 'aliases': aliases}
+            url = urllib.urlencode(url)
             return url
         except:
-            print("Unexpected error in CMOVIES TV Script:")
-            exc_type, exc_obj, exc_tb = sys.exc_info()
-            print(exc_type, exc_tb.tb_lineno)
-            return url
+            failure = traceback.format_exc()
+            log_utils.log('CMoviesHD - Exception: \n' + str(failure))
+            return
 
     def episode(self, url, imdb, tvdb, title, premiered, season, episode):
-        if not url:
-            return url
         try:
+            if url == None: return
+            url = urlparse.parse_qs(url)
+            url = dict([(i, url[i][0]) if url[i] else (i, '') for i in url])
+            url['title'], url['premiered'], url['season'], url['episode'] = title, premiered, season, episode
+            url = urllib.urlencode(url)
+            return url
+        except:
+            failure = traceback.format_exc()
+            log_utils.log('CMoviesHD - Exception: \n' + str(failure))
+            return
 
-            aliases = url['aliases']
-            aliases.append({'title':url['tvshowtitle']})
-            sources = []
-            if len(episode) == 1:
-                episode = "0" + episode
-            with requests.Session() as s:
-                for i in aliases:
-                    search_text = i['title'] + ' season ' + season
-                    p = s.get(self.search_link + search_text)
-                    soup = BeautifulSoup(p.text, 'html.parser')
-                    soup = soup.find_all('div', {'class': 'ml-item'})[0].find_all('a', href=True)[0]
-                    if re.sub(r'\W+', '', soup['title'].lower()) \
-                            == re.sub(r'\W+', '', ((i['title'] + " - season " + season).lower())):
-                        break
-                    else:
-                        soup = None
-                        pass
-                if soup == None:
-                    return sources
-            p = s.get(soup['href'] + 'watch')
-            soup = BeautifulSoup(p.text, 'html.parser').find_all('a', {'class': 'btn-eps'})
-            episode_links = []
-            for i in soup:
-                if re.sub(r'\W+','',title.lower()) in re.sub(r'\W+', '', i.text.lower()):
-                    episode_links.append(i['href'])
-            for i in episode_links:
-                p = s.get(i)
-                if re.findall(r'http.+://openload.co/embed/.+\"', p.text):
-                    openload_link = re.findall(r'http.+://openload.co/embed/.+\"', p.text)[0].strip('"')
-                    olo_source = streamdor(p.text, i, True)
-                    olo_source['url'] = openload_link
-                    sources.append(olo_source)
+    def sources(self, url, hostDict, locDict):
+        sources = []
+
+        try:
+            if url == None: return sources
+            data = urlparse.parse_qs(url)
+            data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
+            title = data['tvshowtitle'] if 'tvshowtitle' in data else data['title']
+            aliases = eval(data['aliases'])
+            #cookie = '; approve_search=yes'
+            query = self.search_link % (urllib.quote_plus(title))
+            query = urlparse.urljoin(self.base_link, query)
+            result = client.request(query) #, cookie=cookie)
+            try:
+
+                if 'episode' in data:
+                    r = client.parseDOM(result, 'div', attrs={'class': 'ml-item'})
+                    r = zip(client.parseDOM(r, 'a', ret='href'), client.parseDOM(r, 'a', ret='title'))
+                    r = [(i[0], i[1], re.findall('(.*?)\s+-\s+Season\s+(\d+)', i[1])) for i in r]
+                    r = [(i[0], i[1], i[2][0]) for i in r if len(i[2]) > 0]
+                    url = [i[0] for i in r if self.matchAlias(i[2][0], aliases) and i[2][1] == data['season']][0]
+
+                    url = '%swatch' % url
+                    result = client.request(url)
+
+                    url = re.findall('a href=\"(.+?)\" class=\"btn-eps first-ep \">Episode %02d' % int(data['episode']), result)[0]
 
                 else:
-                    sources.append(streamdor(p.text, i, False))
-            return sources
+                    r = client.parseDOM(result, 'div', attrs={'class': 'ml-item'})
+                    r = zip(client.parseDOM(r, 'a', ret='href'), client.parseDOM(r, 'a', ret='title'))
+                    results = [(i[0], i[1], re.findall('\((\d{4})', i[1])) for i in r]
+                    try:
+                        r = [(i[0], i[1], i[2][0]) for i in results if len(i[2]) > 0]
+                        url = [i[0] for i in r if self.matchAlias(i[1], aliases) and (year == i[2])][0]
+                    except:
+                        url = None
+                        pass
 
+                    if (url == None):
+                        url = [i[0] for i in results if self.matchAlias(i[1], aliases)][0]
+                    url = '%s/watch' % url
+
+                url = client.request(url, output='geturl')
+                if url == None: raise Exception()
+
+            except:
+              return sources
+
+            url = url if 'http' in url else urlparse.urljoin(self.base_link, url)
+            result = client.request(url)
+            src = re.findall('src\s*=\s*"(.*streamdor.co\/video\/\d+)"', result)[0]
+            if src.startswith('//'):
+                src = 'http:'+src
+            episodeId = re.findall('.*streamdor.co/video/(\d+)', src)[0]
+            p = client.request(src, referer=url)
+            try:
+                p = re.findall(r'JuicyCodes.Run\(([^\)]+)', p, re.IGNORECASE)[0]
+                p = re.sub(r'\"\s*\+\s*\"','', p)
+                p = re.sub(r'[^A-Za-z0-9+\\/=]','', p)
+                p = base64.b64decode(p)
+                p = jsunpack.unpack(p)
+                p = unicode(p, 'utf-8')
+
+                post = {'id': episodeId}
+                p2 = client.request('https://embed.streamdor.co/token.php?v=5', post=post, referer=src, XHR=True)
+                js = json.loads(p2)
+                tok = js['token']
+                quali = 'SD'
+                try:
+                    quali = re.findall(r'label:"(.*?)"',p)[0]
+                except:
+                    pass
+                p = re.findall(r'var\s+episode=({[^}]+});',p)[0]
+                js = json.loads(p)
+                ss = []
+
+                #if 'eName' in js and js['eName'] != '':
+                #    quali = source_utils.label_to_quality(js['eName'])
+                if 'fileEmbed' in js and js['fileEmbed'] != '':
+                    ss.append([js['fileEmbed'], quali])
+                if 'fileHLS' in js and js['fileHLS'] != '':
+                    ss.append(['https://hls.streamdor.co/%s%s'%(tok, js['fileHLS']), quali])
+            except:
+                return sources
+
+            for link in ss:
+
+                try:
+                    if 'google' in url:
+                        valid, hoster = source_utils.is_host_valid(url, hostDict)
+                        urls, host, direct = source_utils.check_directstreams(url, hoster)
+                        for x in urls: sources.append({'source': host, 'quality': x['quality'], 'language': 'en', 'url': x['url'], 'direct': direct, 'debridonly': False})
+
+                    else:
+                        try:
+                            valid, hoster = source_utils.is_host_valid(link[0], hostDict)
+                            direct = False
+                            if not valid:
+                                hoster = 'CDN'
+                                direct = True
+                            sources.append({'source': hoster, 'quality': link[1], 'language': 'en', 'url': link[0], 'direct': direct, 'debridonly': False})
+                        except: pass
+
+                except:
+                    pass
+
+            return sources
         except:
-            print("Unexpected error in CMOVIES EPISODE Script:")
-            exc_type, exc_obj, exc_tb = sys.exc_info()
-            print(exc_type, exc_tb.tb_lineno)
+            failure = traceback.format_exc()
+            log_utils.log('CMoviesHD - Exception: \n' + str(failure))
             return sources
-
-
-    def sources(self, url, hostDict, hostprDict):
-        url = filter(None, url)
-        sources = url
-        return sources
-
 
     def resolve(self, url):
-        return url
-
-#url = source.tvshow(source(), '', '', 'Vikings','',[],'2016')
-#uurl = source.episode(source(),url,'', '', 'A Good Treason', '', '4', '1')
-#url = source.sources(source(),url,'','')
+        if 'google' in url:
+            return directstream.googlepass(url)
+        else:
+            return url

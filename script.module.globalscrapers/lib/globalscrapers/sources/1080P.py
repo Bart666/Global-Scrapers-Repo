@@ -1,41 +1,20 @@
-# -*- coding: UTF-8 -*-
-#           ________
-#          _,.-Y  |  |  Y-._
-#      .-~"   ||  |  |  |   "-.
-#      I" ""=="|" !""! "|"[]""|     _____
-#      L__  [] |..------|:   _[----I" .-{"-.
-#     I___|  ..| l______|l_ [__L]_[I_/r(=}=-P
-#    [L______L_[________]______j~  '-=c_]/=-^
-#     \_I_j.--.\==I|I==_/.--L_]
-#       [_((==)[`-----"](==)j
-#          I--I"~~"""~~"I--I
-#          |[]|         |[]|
-#          l__j         l__j
-#         |!!|         |!!|
-#          |..|         |..|
-#          ([])         ([])
-#          ]--[         ]--[
-#          [_L]         [_L]
-#         /|..|\       /|..|\
-#        `=}--{='     `=}--{='
-#       .-^--r-^-.   .-^--r-^-.
-# Resistance is futile @lock_down... 
+
+
 
 import re,traceback,urllib,urlparse,json,base64
 
 from resources.lib.modules import cleantitle
 from resources.lib.modules import client
 from resources.lib.modules import directstream
-from resources.lib.modules import log_utils
 from resources.lib.modules import source_utils
 
 class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['1080pmovie.com', 'watchhdmovie.net']
+        self.domains = ['watchhdmovie.net']
         self.base_link = 'https://watchhdmovie.net'
-        self.search_link = '/?s=%s'
+        self.search_link = '%s/wp-json/wp/v2/posts?search=%s'
 
     def movie(self, imdb, title, localtitle, aliases, year):
         try:
@@ -80,4 +59,5 @@ class source:
 
     def resolve(self, url):
         return directstream.googlepass(url)
+
 

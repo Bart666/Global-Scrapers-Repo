@@ -1,5 +1,5 @@
 <addons>
-<addon id="script.module.globalscrapers" name="globalscrapers Module" version="3.0.0" provider-name="Solid_Snake">
+<addon id="script.module.globalscrapers" name="globalscrapers Module" version="3.1.1" provider-name="Solid_Snake">
 	<requires>
 		<import addon="xbmc.python" version="2.1.0" />
 		<import addon="script.module.beautifulsoup4"/>
@@ -13,8 +13,4 @@
         <license>GPL</license>
 	</extension>
 </addon>
-<<<<<<< HEAD
 </addons>
-=======
-</addons>		
->>>>>>> 1ce695e1dec2391caa2f1b34d553f46d8033954f

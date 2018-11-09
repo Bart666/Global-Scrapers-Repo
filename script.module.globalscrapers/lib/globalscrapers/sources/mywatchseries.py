@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 '''
-    Covenant Add-on
+    Yoda Add-on
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 '''
 
 
-import re,urllib,urlparse,json, requests
+import re,urllib,urlparse,json
 
 from resources.lib.modules import cleantitle
 from resources.lib.modules import client
@@ -30,9 +30,9 @@ class source:
         self.priority = 0
         self.language = ['en']
         self.domains = ['onwatchseries.to','mywatchseries.to']
-        self.base_link = 'http://dwatchseries.to'
-        self.search_link = 'http://dwatchseries.to/show/search-shows-json'
-        self.search_link_2 = 'http://dwatchseries.to/search/%s'
+        self.base_link = 'http://mywatchseries.to'
+        self.search_link = 'http://mywatchseries.to/show/search-shows-json'
+        self.search_link_2 = 'http://mywatchseries.to/search/%s'
 
 
     def tvshow(self, imdb, tvdb, tvshowtitle, localtvshowtitle, aliases, year):
@@ -49,7 +49,7 @@ class source:
             if r:
                 r = [(i['seo_url'], i['value'], i['label']) for i in r if 'value' in i and 'label' in i and 'seo_url' in i]
             else:
-                r = requests.get(self.search_link_2 % q, 'tv shows').text
+                r = proxy.request(self.search_link_2 % q, 'tv shows')
                 r = client.parseDOM(r, 'div', attrs = {'valign': '.+?'})
                 r = [(client.parseDOM(i, 'a', ret='href'), client.parseDOM(i, 'a', ret='title'), client.parseDOM(i, 'a')) for i in r]
                 r = [(i[0][0], i[1][0], i[2][0]) for i in r if i[0] and i[1] and i[2]]

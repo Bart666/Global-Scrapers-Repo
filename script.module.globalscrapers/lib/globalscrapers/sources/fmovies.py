@@ -1,360 +1,92 @@
-# -*- coding: UTF-8 -*-
-#           ________
-#          _,.-Y  |  |  Y-._
-#      .-~"   ||  |  |  |   "-.
-#      I" ""=="|" !""! "|"[]""|     _____
-#      L__  [] |..------|:   _[----I" .-{"-.
-#     I___|  ..| l______|l_ [__L]_[I_/r(=}=-P
-#    [L______L_[________]______j~  '-=c_]/=-^
-#     \_I_j.--.\==I|I==_/.--L_]
-#       [_((==)[`-----"](==)j
-#          I--I"~~"""~~"I--I
-#          |[]|         |[]|
-#          l__j         l__j
-#         |!!|         |!!|
-#          |..|         |..|
-#          ([])         ([])
-#          ]--[         ]--[
-#          [_L]         [_L]
-#         /|..|\       /|..|\
-#        `=}--{='     `=}--{='
-#       .-^--r-^-.   .-^--r-^-.
-# Resistance is futile @lock_down... 
 
-import re,urllib,urlparse,json,ast,xbmc,httplib
 
-from resources.lib.modules import client
+import re,urllib,urlparse,json,base64,time
+
 from resources.lib.modules import cleantitle
-from resources.lib.modules import directstream
-from resources.lib.modules import jsunpack
-from resources.lib.modules import source_utils
+from resources.lib.modules import dom_parser2
+from resources.lib.modules import client
+from resources.lib.modules import debrid
 
 class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['fmovies.se', 'fmovies.to', 'bmovies.is']
-        self.base_link = 'https://www7.fmovies.se/'
-        self.search_path = '/search?keyword=%s'
-        self.film_path = '/film/%s'
-        self.js_path = '/assets/min/public/all.js?5a0da8a9'
-        self.info_path = '/ajax/episode/info?ts=%s&_=%s&id=%s&server=%s&update=0'
-        self.grabber_path = '/grabber-api/?ts=%s&id=%s&token=%s&mobile=0'
-
+        self.domains = ['fmovies.sc']
+        self.base_link = 'http://www4.fmovies.sc'
+        self.search_link = '/watch/%s-%s-online.html' 
+        
     def movie(self, imdb, title, localtitle, aliases, year):
         try:
             clean_title = cleantitle.geturl(title)
-            query = (self.search_path % clean_title)
-            url = urlparse.urljoin(self.base_link, query)
-
-            search_response = client.request(url)
-
-            results = client.parseDOM(search_response,
-                'div', attrs={'class': 'row movie-list'})[0]
-
-            search = '=\"(ajax\/film\/tooltip\/.*?)\".*?class=\"name\" href=\"\/film\/(.*?)\.(.*?)\">'
-            results_info = re.findall(search, results)
-
-            results_list = []
-
-            for result in results_info:
-                if(result[1] == clean_title):
-                    results_list.append({'title': result[1], 'id': result[2], 'info': result[0]})
-
-            if(len(results_list) > 1):
-                for result in results_list:
-                    url = urlparse.urljoin(self.base_link, '/' + result['info'])
-                    tooltip = client.request(url, XHR=True)
-
-                    date = re.findall('<span>(\d{4})</span>', tooltip)[0]
-
-                    if date == str(year):
-                        result_dict = result
-                        break
-
-            else:
-                result_dict = results_list[0]
-
-            query = self.film_path % (result_dict['title'] + '.' + result_dict['id'])
-            url = urlparse.urljoin(self.base_link, query)
-
-            source_response = client.request(url)
-
-            ts = re.findall('data-ts=\"(.*?)\">', source_response)[0]
-
-            servers = client.parseDOM(
-                source_response, 'div', attrs={'id': 'servers'})[0]
-            servers = servers.split('</li> </ul> </div> </div>')
-
-            sources_list = []
-
-            for i in servers:
-                try:
-                    source_id = re.findall('\/(.{6})">', i)[0]
-                    source_server = re.findall('data-id=\"(\d{2})\"', i)[0]
-
-                    sources_list.append((source_id, source_server))
-                except Exception:
-                    pass
-
-            data = {
-                'imdb': imdb,
-                'title': title,
-                'localtitle': localtitle,
-                'year': year,
-                'ts': ts,
-                'sources': sources_list
-            }
-            url = urllib.urlencode(data)
-
+            url = urlparse.urljoin(self.base_link, (self.search_link %(clean_title,year)))
             return url
-
-        except Exception:
+        except:
             return
 
     def tvshow(self, imdb, tvdb, tvshowtitle, localtvshowtitle, aliases, year):
         try:
-            data = {
-                'imdb': imdb,
-                'tvdb': tvdb,
-                'tvshowtitle': tvshowtitle,
-                'year': year
-            }
-            url = urllib.urlencode(data)
-
+            aliases.append({'country': 'us', 'title': tvshowtitle})
+            url = {'imdb': imdb, 'tvdb': tvdb, 'tvshowtitle': tvshowtitle, 'year': year, 'aliases': aliases}
+            url = urllib.urlencode(url)
             return url
-
-        except Exception:
+        except:
             return
 
     def episode(self, url, imdb, tvdb, title, premiered, season, episode):
         try:
-            data = urlparse.parse_qs(url)
-            data = dict((i, data[i][0]) for i in data)
-
-            clean_title = cleantitle.geturl(data['tvshowtitle'])
-            query = (self.search_path % clean_title)
-            url = urlparse.urljoin(self.base_link, query)
-
-            search_response = client.request(url)
-
-            results_list = client.parseDOM(
-                search_response, 'div', attrs={'class': 'row movie-list'})[0]
-
-            film_id = ''
-
-            film_tries = [
-             '\/film\/(' + (clean_title + '-0' + season) + '[^-0-9].+?)\"',
-             '\/film\/(' + (clean_title + '-' + season) + '[^-0-9].+?)\"',
-             '\/film\/(' + clean_title + '[^-0-9].+?)\"'
-             ]
-
-            for i in range(len(film_tries)):
-                if not film_id:
-                    film_id = re.findall(film_tries[i], results_list)
-                else:
-                    break
-
-            film_id = film_id[0]
-
-            query = (self.film_path % film_id)
-            url = urlparse.urljoin(self.base_link, query)
-
-            film_response = client.request(url)
-
-            ts = re.findall('(data-ts=\")(.*?)(\">)', film_response)[0][1]
-
-            servers = client.parseDOM(
-                film_response, 'div', attrs={'id': 'servers'})[0]
-
-            servers = servers.split('</li> </ul> </div> </div>')
-
-            if not re.findall(
-             '([^\/]*)\">' + episode + '[^0-9]', servers[0]):
-                episode = '%02d' % int(episode)
-
-            sources_list = []
-
-            for i in servers:
-                try:
-                    source_id = re.findall(
-                        ('([^\/]*)\">' + episode + '[^0-9]'), i)[0]
-                    source_server = re.findall('data-id=\"(.*?)\"', i)[0]
-
-                    sources_list.append((source_id, source_server))
-                except Exception:
-                    pass
-
-            data.update({
-                'title': title,
-                'premiered': premiered,
-                'season': season,
-                'episode': episode,
-                'ts': ts,
-                'sources': sources_list
-            })
-
-            url = urllib.urlencode(data)
-
+            if url == None: return
+            url = urlparse.parse_qs(url)
+            url = dict([(i, url[i][0]) if url[i] else (i, '') for i in url])
+            clean_title = cleantitle.geturl(url['tvshowtitle'])+'-s%02d' % int(season)
+            url = urlparse.urljoin(self.base_link, (self.search_link %(clean_title,url['year'])))
+            r = client.request(url)
+            r = dom_parser2.parse_dom(r, 'div', {'id': 'ip_episode'})
+            r = [dom_parser2.parse_dom(i, 'a', req=['href']) for i in r if i]
+            for i in r[0]:
+                if i.content == 'Episode %s'%episode:
+                    url = i.attrs['href']
             return url
-
-        except Exception:
+        except:
             return
 
     def sources(self, url, hostDict, hostprDict):
-        sources = []
-
         try:
-            data = urlparse.parse_qs(url)
-            data = dict((i, data[i][0]) for i in data)
+            sources = []
+            if url == None: return sources
+            
+            r = client.request(url)
+            quality = re.findall(">(\w+)<\/p",r)
+            if quality[0] == "HD":
+                quality = "720p"
+            else:
+                quality = "SD"
+            r = dom_parser2.parse_dom(r, 'div', {'id': 'servers-list'})
+            r = [dom_parser2.parse_dom(i, 'a', req=['href']) for i in r if i]
 
-            data['sources'] = ast.literal_eval(data['sources'])
-
-            for i in data['sources']:
-                try:
-                    token = str(self.__token(
-                        {'id': i[0], 'update': '0', 'ts': data['ts'], 'server': i[1]}))
-
-                    query = (self.info_path % (data['ts'], token, i[0], i[1]))
-                    url = urlparse.urljoin(self.base_link, query)
-
-                    info_response = client.request(url, headers={'Referer': self.base_link}, XHR=True)
-
-                    info_dict = json.loads(info_response)
-
-                    if info_dict['type'] == 'direct':
-                        token64 = info_dict['params']['token']
-                        query = (self.grabber_path % (data['ts'], i[0], self.__decode_shift(token64, -18)))
-                        url = urlparse.urljoin(self.base_link, query)
-                        response = client.request(url, XHR=True)
-
-                        grabber_dict = json.loads(response)
-
-                        if not grabber_dict['error'] == None:
-                            continue
-
-                        sources_list = grabber_dict['data']
-
-                        for j in sources_list:
-                            try:
-                                quality = source_utils.label_to_quality(j['label'])
-                                link = j['file']
-
-                                if 'lh3.googleusercontent' in link:
-                                    link = directstream.googleproxy(link)
-
-                                sources.append({
-                                    'source': 'gvideo',
-                                    'quality': quality,
-                                    'language': 'en',
-                                    'url': link,
-                                    'direct': True,
-                                    'debridonly': False
-                                })
-
-                            except Exception:
-                                pass
-
-                    elif info_dict['type'] == 'iframe':
-                        embed = info_dict['target']
-
-                        valid, hoster = source_utils.is_host_valid(embed, hostDict)
-                        if not valid: continue
-
-                        headers = {
-                            'Referer': self.base_link
-                        }
-
-                        embed = embed + source_utils.append_headers(headers)
-
-                        sources.append({
-                            'source': hoster,
-                            'quality': '720p', 
-                            'language': 'en',
-                            'url': embed,
-                            'direct': False,
-                            'debridonly': False
-                        })
-
-                except Exception:
-                    pass
-
+            for i in r[0]:
+                url = {'url': i.attrs['href'], 'data-film': i.attrs['data-film'], 'data-server': i.attrs['data-server'], 'data-name' : i.attrs['data-name']}
+                url = urllib.urlencode(url)
+                sources.append({'source': i.content, 'quality': quality, 'language': 'en', 'url': url, 'direct': False, 'debridonly': False})
             return sources
-
-        except Exception:
+        except:
             return sources
 
     def resolve(self, url):
         try:
+            urldata = urlparse.parse_qs(url)
+            urldata = dict((i, urldata[i][0]) for i in urldata)
+            post = {'ipplugins': 1,'ip_film': urldata['data-film'], 'ip_server': urldata['data-server'], 'ip_name': urldata['data-name'],'fix': "0"}
+            p1 = client.request('http://fmovies.sc/ip.file/swf/plugins/ipplugins.php', post=post, referer=urldata['url'], XHR=True)
+            p1 = json.loads(p1)
+            p2 = client.request('http://fmovies.sc/ip.file/swf/ipplayer/ipplayer.php?u=%s&s=%s&n=0' %(p1['s'],urldata['data-server']))
+            p2 = json.loads(p2)
+            p3 = client.request('http://fmovies.sc/ip.file/swf/ipplayer/api.php?hash=%s' %(p2['hash']))
+            p3 = json.loads(p3)
+            n = p3['status']
+            if n == False:
+                p2 = client.request('http://fmovies.sc/ip.file/swf/ipplayer/ipplayer.php?u=%s&s=%s&n=1' %(p1['s'],urldata['data-server']))
+                p2 = json.loads(p2)
+            url =  "https:%s" %p2["data"].replace("\/","/")
             return url
-
-        except Exception:
-            return
-
-    def __token(self, dic):
-        def bitshifthex(t, e):
-            i = 0
-            n = 0
-
-            for i in range(0, max(len(t), len(e))):
-        		if i < len(e):
-        			n += ord(e[i])
-        		if i < len(t):
-        			n += ord(t[i])
-
-            h = format(int(hex(n),16),'x')
-            return h
-
-        def bitshiftadd(t):
-            i = 0
-
-            for e in range(0, len(t)):
-            	i += ord(t[e]) + e
-
-            return i
-
-        try:
-            url = urlparse.urljoin(self.base_link, self.js_path)
-            response = client.request(url)
-
-            unpacked = jsunpack.unpack(response)
-
-            phrase = 'function\(t,\s*i,\s*n\)\s*{\s*"use strict";\s*function e\(\)\s*{\s*return (.*?)\s*}\s*function r\(t\)'
-
-            seed_var = re.findall(r'%s' % phrase, unpacked)[0]
-            seed = re.findall(r'%s=.*?\"(.*?)\"' % seed_var, unpacked)[0]
-
-            token = bitshiftadd(seed)
-
-            for i in dic:
-                token += bitshiftadd(bitshifthex(seed + i, dic[i]))
-
-            return str(token)
-
-        except Exception:
-            return
-
-    def __decode_shift(self, t, i):
-        try:
-            n = []
-            e = []
-            r = ''
-
-            for n in range(0, len(t)):
-                if n == 0 and t[n] == '.':
-                    pass
-                else:
-                    c = ord(t[n])
-                    if c >= 97 and c <= 122:
-                        e.append((c - 71 + i) % 26 + 97)
-                    elif c >= 65 and c <= 90:
-                        e.append((c - 39 + i) % 26 + 65)
-                    else:
-                        e.append(c)
-            for ee in e:
-    			r += chr(ee)
-
-            return r
-
-        except Exception:
+        except:
             return

@@ -1,31 +1,14 @@
-# NEEDS FIXING
-
-# -*- coding: utf-8 -*-
-
-'''
-    Covenant Add-on
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
 
 
-import re,json,urllib,urlparse
+# FIXME: Some titles, such as Thor Ragnarok, cause exceptions and not pulling URL correct. Need to investigate.
+
+import re,traceback,urllib,urlparse
 
 from resources.lib.modules import cleantitle
 from resources.lib.modules import client
-from resources.lib.modules import directstream
-
+from resources.lib.modules import debrid
+from resources.lib.modules import log_utils
+from resources.lib.modules import source_utils
 
 class source:
     def __init__(self):
@@ -35,56 +18,51 @@ class source:
         self.base_link = 'https://watch32hd.co'
         self.search_link = '/watch?v=%s_%s'
 
-
     def movie(self, imdb, title, localtitle, aliases, year):
         try:
             url = {'imdb': imdb, 'title': title, 'year': year}
             url = urllib.urlencode(url)
             return url
         except:
+            failure = traceback.format_exc()
+            log_utils.log('Watch32 - Exception: \n' + str(failure))
             return
-
 
     def sources(self, url, hostDict, hostprDict):
         try:
             sources = []
-
             if url == None: return sources
 
             data = urlparse.parse_qs(url)
             data = dict([(i, data[i][0]) if data[i] else (i, '') for i in data])
 
-            title = data['title'] ; year = data['year']
+            title = data['title']
+            year = data['year']
 
-            h = {'User-Agent': client.randomagent()}
+            url = urlparse.urljoin(self.base_link, self.search_link) 
+            url = url % (title.replace(':', '').replace(' ','_'),year)
 
-            v = '%s_%s' % (cleantitle.geturl(title).replace('-', '_'), year)
+            search_results = client.request(url)
 
-            url = '/watch?v=%s' % v
-            url = urlparse.urljoin(self.base_link, url)
-
-            #c = client.request(url, headers=h, output='cookie')
-            #c = client.request(urlparse.urljoin(self.base_link, '/av'), cookie=c, output='cookie', headers=h, referer=url)
-            #c = client.request(url, cookie=c, headers=h, referer=url, output='cookie')
-
-            post = urllib.urlencode({'v': v})
-            u = urlparse.urljoin(self.base_link, '/video_info/iframe')
-
-            #r = client.request(u, post=post, cookie=c, headers=h, XHR=True, referer=url)
-            r = client.request(u, post=post, headers=h, XHR=True, referer=url)
-            r = json.loads(r).values()
-            r = [urllib.unquote(i.split('url=')[-1])  for i in r]
-
-            for i in r:
-                try: sources.append({'source': 'gvideo', 'quality': directstream.googletag(i)[0]['quality'], 'language': 'en', 'url': i, 'direct': True, 'debridonly': False})
-                except: pass
-
+            varid = re.compile('var frame_url = "(.+?)"',re.DOTALL).findall(search_results)[0].replace('/embed/','/streamdrive/info/')
+            res_chk = re.compile('class="title"><h1>(.+?)</h1>',re.DOTALL).findall(search_results)[0]
+            varid = 'http:'+varid
+            holder = client.request(varid)
+            links = re.compile('"src":"(.+?)"',re.DOTALL).findall(holder)
+            for link in links:
+                vid_url = link.replace('\\','')
+                if '1080' in res_chk:
+                    quality = '1080p'
+                elif '720' in res_chk:
+                    quality = '720p'
+                else:
+                    quality = 'DVD'
+                sources.append({'source': 'Googlelink', 'quality': quality, 'language': 'en', 'url': vid_url, 'direct': False, 'debridonly': False})
             return sources
         except:
+            failure = traceback.format_exc()
+            log_utils.log('Watch32 - Exception: \n' + str(failure))
             return sources
 
-
     def resolve(self, url):
-        return directstream.googlepass(url)
-
-
+        return url

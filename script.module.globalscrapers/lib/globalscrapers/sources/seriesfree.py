@@ -1,21 +1,4 @@
-# -*- coding: utf-8 -*-
 
-'''
-    Covenant Add-on
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
 
 
 import re,urllib,urlparse,json,base64
@@ -96,7 +79,6 @@ class source:
                     r = re.compile('href="([^"]+)"\s+class="action-btn').findall(result2)[0]
                     valid, hoster = source_utils.is_host_valid(r, hostDict)
                     if not valid: continue
-                    #log_utils.log('JairoxDebug1: %s - %s' % (url2,r), log_utils.LOGDEBUG)
                     urls, host, direct = source_utils.check_directstreams(r, hoster)
                     for x in urls: sources.append({'source': host, 'quality': x['quality'], 'language': 'en', 'url': x['url'], 'direct': direct, 'debridonly': False})
                     
@@ -104,7 +86,6 @@ class source:
                     #traceback.print_exc()
                     pass           
                     
-            #log_utils.log('JairoxDebug2: %s' % (str(sources)), log_utils.LOGDEBUG)
             return sources
         except:
             return sources

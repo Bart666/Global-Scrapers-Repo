@@ -1,126 +1,66 @@
-# -*- coding: UTF-8 -*-
-#           ________
-#          _,.-Y  |  |  Y-._
-#      .-~"   ||  |  |  |   "-.
-#      I" ""=="|" !""! "|"[]""|     _____
-#      L__  [] |..------|:   _[----I" .-{"-.
-#     I___|  ..| l______|l_ [__L]_[I_/r(=}=-P
-#    [L______L_[________]______j~  '-=c_]/=-^
-#     \_I_j.--.\==I|I==_/.--L_]
-#       [_((==)[`-----"](==)j
-#          I--I"~~"""~~"I--I
-#          |[]|         |[]|
-#          l__j         l__j
-#         |!!|         |!!|
-#          |..|         |..|
-#          ([])         ([])
-#          ]--[         ]--[
-#          [_L]         [_L]
-#         /|..|\       /|..|\
-#        `=}--{='     `=}--{='
-#       .-^--r-^-.   .-^--r-^-.
-# Resistance is futile @lock_down... 
 
-import re,urllib,urlparse
 
+import re
+import urllib
+import urlparse
 from resources.lib.modules import cleantitle
 from resources.lib.modules import client
-from resources.lib.modules import directstream
-from resources.lib.modules import log_utils
-from resources.lib.modules import source_utils
+from resources.lib.modules import proxy
+from resources.lib.modules import cfscrape
 
 class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['seehd.club', 'seehd.unblckd.bet', 'seehd.pl']
-        self.base_link = 'https://seehd.one/'
-        self.movie_link = '/%s-%04d-watch-online/'
-        self.tvshow_link = '/%s'
+        self.domains = ['seehd.pl']
+        self.base_link = 'http://www.seehd.pl'
+        self.search_link = '/%s-%s-watch-online/'
 
     def movie(self, imdb, title, localtitle, aliases, year):
         try:
-            t = cleantitle.geturl(title)
-            url = urlparse.urljoin(self.base_link, self.movie_link %(t, int(year)))
+            title = cleantitle.geturl(title)
+            url = self.base_link + self.search_link % (title,year)
             return url
         except:
             return
-
+			
     def tvshow(self, imdb, tvdb, tvshowtitle, localtvshowtitle, aliases, year):
         try:
-            t = cleantitle.geturl(tvshowtitle)
-            url = urlparse.urljoin(self.base_link, self.tvshow_link %(t))
+            url = cleantitle.geturl(tvshowtitle)
+            return url
+        except:
+            return
+ 
+    def episode(self, url, imdb, tvdb, title, premiered, season, episode):
+        try:
+            if not url: return
+            title = url
+            season = '%02d' % int(season)
+            episode = '%02d' % int(episode)
+            se = 's%se%s' % (season,episode)
+            url = self.base_link + self.search_link % (title,se)
             return url
         except:
             return
 
-    def episode(self, url, imdb, tvdb, title, premiered, season, episode):
-        try:
-            if url == None: return
-            url += '-s%02de%02d-watch-online/' % (int(season), int(episode))
-            return url
-        except:
-            return
 
     def sources(self, url, hostDict, hostprDict):
         try:
             sources = []
-            if url == None: return sources
-
-            r = client.request(url)
-            if '<meta name="application-name" content="Unblocked">' in r: return sources
-            r = client.parseDOM(r, 'div',attrs={'class':'entry-content'})[0]
-            frames = []
-            frames += client.parseDOM(r, 'iframe', ret='src')
-            frames += client.parseDOM(r, 'a', ret='href')
-            frames += client.parseDOM(r, 'source', ret='src')
-            
+            scraper = cfscrape.create_scraper()
+            r = scraper.get(url).content
             try:
-                q = re.findall('<strong>Quality:</strong>([^<]+)', r)[0]
-                if 'high' in q.lower(): quality = '720p'
-                elif 'cam' in q.lower(): quality = 'CAM'
-                else: quality = 'SD'
-            except: quality = 'SD'
-            
-            for i in frames:
-                try:
-                    if 'facebook' in i or 'plus.google' in i: continue
-                    url = i
-                    if 'https://openload.co' in url and url.lower().endswith(('embed/%s')):
-                        sources.append({'source': 'CDN', 'quality': quality, 'language': 'en', 'url': url,
-                                    'info': '', 'direct': False, 'debridonly': False})
-
-                    elif 'ok.ru' in url:
-                        print url
-                        host = 'vk'
-                        url = directstream.odnoklassniki(url)
-                        print url
-                        sources.append({'source': host, 'quality': quality, 'language': 'en', 'url': url,
-                                        'info': '', 'direct': False, 'debridonly': False})
-
-                    elif 'vk.com' in url:
-                        host = 'vk'
-                        url = directstream.vk(url)
-                        sources.append({'source': host, 'quality': quality, 'language': 'en', 'url': url,
-                                        'info': '', 'direct': False, 'debridonly': False})
-
-                    else:
-                        valid, host = source_utils.is_host_valid(url, hostDict)
-                        if valid:
-                            sources.append({'source': host, 'quality': quality, 'language': 'en', 'url': url,
-                                        'info': '', 'direct': False, 'debridonly': False})
-                        else:
-                            valid, host = source_utils.is_host_valid(url, hostprDict)
-                            if not valid: continue
-                            sources.append({'source': host, 'quality': quality, 'language': 'en', 'url': url,
-                                        'info': '', 'direct': False, 'debridonly': True})
-                except:
-                    pass
-
-            return sources
-        except:
-            return sources
+                match = re.compile('<iframe.+?src="(.+?)://(.+?)/(.+?)"').findall(r)
+                for http,host,url in match: 
+                    host = host.replace('www.','')
+                    url = '%s://%s/%s' % (http,host,url)
+                    if 'seehd' in host: pass
+                    else: sources.append({'source': host,'quality': 'HD','language': 'en','url': url,'direct': False,'debridonly': False}) 
+            except:
+                return
+        except Exception:
+            return
+        return sources
 
     def resolve(self, url):
         return url
-

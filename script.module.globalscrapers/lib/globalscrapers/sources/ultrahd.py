@@ -1,25 +1,4 @@
-# -*- coding: UTF-8 -*-
-#           ________
-#          _,.-Y  |  |  Y-._
-#      .-~"   ||  |  |  |   "-.
-#      I" ""=="|" !""! "|"[]""|     _____
-#      L__  [] |..------|:   _[----I" .-{"-.
-#     I___|  ..| l______|l_ [__L]_[I_/r(=}=-P
-#    [L______L_[________]______j~  '-=c_]/=-^
-#     \_I_j.--.\==I|I==_/.--L_]
-#       [_((==)[`-----"](==)j
-#          I--I"~~"""~~"I--I
-#          |[]|         |[]|
-#          l__j         l__j
-#         |!!|         |!!|
-#          |..|         |..|
-#          ([])         ([])
-#          ]--[         ]--[
-#          [_L]         [_L]
-#         /|..|\       /|..|\
-#        `=}--{='     `=}--{='
-#       .-^--r-^-.   .-^--r-^-.
-# Resistance is futile @lock_down... 
+
 
 import re,traceback,urllib,urlparse
 
@@ -34,8 +13,8 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['ultrahdindir.net']
-        self.base_link = 'https://www.ultrahdindir.net/'
+        self.domains = ['ultrahdindir.com']
+        self.base_link = 'http://ultrahdindir.com'
         self.post_link = '/index.php?do=search'
 
     def movie(self, imdb, title, localtitle, aliases, year):
@@ -126,7 +105,7 @@ class source:
 
                             if 'ftp' in url: host = 'COV'; direct = True;
                             else: direct = False; host= 'turbobit.net'
-                            #if not host in hostDict: continue
+                            
 
                             host = client.replaceHTMLCodes(host)
                             host = host.encode('utf-8')
