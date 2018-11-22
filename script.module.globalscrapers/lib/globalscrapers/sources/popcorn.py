@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 
 
 import re,requests,traceback,base64,urllib,urlparse
@@ -5,6 +6,7 @@ import re,requests,traceback,base64,urllib,urlparse
 from resources.lib.modules import cleantitle
 from resources.lib.modules import client
 from resources.lib.modules import log_utils
+from resources.lib.modules import debrid										
 
 class source:
     def __init__(self):

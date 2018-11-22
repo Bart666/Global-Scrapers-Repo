@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 
 
 import re,traceback,urlparse,urllib,base64

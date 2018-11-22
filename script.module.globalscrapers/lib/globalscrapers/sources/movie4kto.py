@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 
 
 import re
@@ -9,6 +10,7 @@ from resources.lib.modules import cleantitle
 from resources.lib.modules import client
 from resources.lib.modules import source_utils
 from resources.lib.modules import dom_parser
+from resources.lib.modules import cfscrape
 
 
 class source:
@@ -18,6 +20,7 @@ class source:
         self.domains = ['movie4k.to']
         self._base_link = None
         self.search_link = '/movies.php?list=search&search=%s'
+        self.scraper = cfscrape.create_scraper()
 
     @property
     def base_link(self):
@@ -41,7 +44,7 @@ class source:
 
             url = urlparse.urljoin(self.base_link, url)
 
-            r = client.request(url)
+            r = self.scraper.get(url).content
             r = r.replace('\\"', '"')
 
             links = dom_parser.parse_dom(r, 'tr', attrs={'id': 'tablemoviesindex2'})
@@ -72,7 +75,7 @@ class source:
         try:
             h = urlparse.urlparse(url.strip().lower()).netloc
 
-            r = client.request(url)
+            r = self.scraper.get(url).content
             r = r.rsplit('"underplayer"')[0].rsplit("'underplayer'")[0]
 
             u = re.findall('\'(.+?)\'', r) + re.findall('\"(.+?)\"', r)
@@ -92,7 +95,7 @@ class source:
             t = [cleantitle.get(i) for i in set(titles) if i]
             y = ['%s' % str(year), '%s' % str(int(year) + 1), '%s' % str(int(year) - 1), '0']
 
-            r = client.request(q)
+            r = self.scraper.get(q).content
 
             r = dom_parser.parse_dom(r, 'tr', attrs={'id': re.compile('coverPreview.+?')})
             r = [(dom_parser.parse_dom(i, 'a', req='href'), dom_parser.parse_dom(i, 'div', attrs={'style': re.compile('.+?')}), dom_parser.parse_dom(i, 'img', req='src')) for i in r]
@@ -107,7 +110,7 @@ class source:
             r = [(i[0], i[1], i[2], re.findall('\((.+?)\)$', i[1])) for i in r]
             r = [(i[0], i[1], i[2]) for i in r if not i[3]]
             r = [i for i in r if i[2] in y]
-            r = sorted(r, key=lambda i: int(i[2]), reverse=True)  # with year > no year
+            r = sorted(r, key=lambda i: int(i[2]), reverse=True) 
 
             r = [(client.replaceHTMLCodes(i[0]), i[1], i[2]) for i in r]
 
@@ -120,7 +123,7 @@ class source:
             for i in match2[:5]:
                 try:
                     if match: url = match[0]; break
-                    r = client.request(urlparse.urljoin(self.base_link, i))
+                    r = self.scraper.get(urlparse.urljoin(self.base_link, i)).content
                     r = re.findall('(tt\d+)', r)
                     if imdb in r: url = i; break
                 except:
@@ -135,7 +138,7 @@ class source:
             for domain in self.domains:
                 try:
                     url = 'http://%s' % domain
-                    r = client.request(url, limit=1, timeout='10')
+                    r = self.scraper.get(url, limit=1, timeout='10').content
                     r = dom_parser.parse_dom(r, 'meta', attrs={'name': 'author'}, req='content')
                     if r and 'movie4k.to' in r[0].attrs.get('content').lower():
                         return url
@@ -143,5 +146,3 @@ class source:
                     pass
         except:
             pass
-
-        return fallback
