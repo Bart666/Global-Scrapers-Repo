@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-
+# -Cleaned and Checked on 10-10-2018 by JewBMX in Yoda.
 
 import re,urllib,urlparse
 
@@ -7,13 +7,12 @@ from resources.lib.modules import cleantitle
 from resources.lib.modules import client
 from resources.lib.modules import proxy
 
-
 class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
         self.domains = ['my-project-free.tv']
-        self.base_link = 'https://www8.project-free-tv.ag/'
+        self.base_link = 'https://my-project-free.tv' #https://www8.project-free-tv.ag
         self.search_link = '/episode/%s-season-%s-episode-%s'
 
     def tvshow(self, imdb, tvdb, tvshowtitle, localtvshowtitle, aliases, year):

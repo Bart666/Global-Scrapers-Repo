@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 '''
-    xmovies scraper for resistance.
+    xmovies scraper for Exodus forks.
     Nov 9 2018 - Checked
 
     Updated and refactored by someone.

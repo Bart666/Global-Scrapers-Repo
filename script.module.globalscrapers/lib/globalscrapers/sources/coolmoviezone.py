@@ -1,8 +1,7 @@
 # -*- coding: UTF-8 -*-
 
-
 import re,traceback,urllib,urlparse
-import resolveurl as urlresolver
+import resolveurl
 
 from resources.lib.modules import cleantitle
 from resources.lib.modules import client
@@ -12,8 +11,8 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['coolmoviezone.online']
-        self.base_link = 'https://coolmoviezone.online'
+        self.domains = ['coolmoviezone.biz']
+        self.base_link = 'http://coolmoviezone.biz/'
         self.search_link = '/index.php?s=%s'
 
     def movie(self, imdb, title, localtitle, aliases, year):

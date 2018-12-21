@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
 
-
 import re
 import urllib
 import urlparse
@@ -13,8 +12,8 @@ class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['iwatchflix.co','iwatchflix.xyz']
-        self.base_link = 'https://iwatchflix.co'
+        self.domains = ['iwatchflix.xyz']
+        self.base_link = 'https://iwatchflix.xyz'
         self.movie_link = '/%s'
         self.tv_link = '/episode/%s-season-%s-episode-%s'
 

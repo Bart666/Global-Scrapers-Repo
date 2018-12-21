@@ -1,6 +1,4 @@
 # -*- coding: UTF-8 -*-
-
-
 import re,urllib,urlparse,json,base64,time
 
 from resources.lib.modules import cleantitle
@@ -13,7 +11,7 @@ class source:
         self.priority = 1
         self.language = ['en']
         self.domains = ['fmovies.sc']
-        self.base_link = 'http://www4.fmovies.sc'
+        self.base_link = 'http://fmovies.sc'
         self.search_link = '/watch/%s-%s-online.html' 
         
     def movie(self, imdb, title, localtitle, aliases, year):

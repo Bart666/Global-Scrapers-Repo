@@ -1,12 +1,5 @@
 # -*- coding: UTF-8 -*-
-'''
-    reddit scraper for resistance.
-    Nov 9 2018 - Checked
-    Oct 11 2018 - Cleaned and Checked
 
-    Updated and refactored by someone.
-    Originally created by others.
-'''
 import re
 import urllib
 import urlparse

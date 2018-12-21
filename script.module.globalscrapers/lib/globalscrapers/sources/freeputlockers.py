@@ -1,11 +1,5 @@
 # -*- coding: UTF-8 -*-
-'''
-    freeputlockers scraper for resistance.
-    Nov 9 2018 - Checked
 
-    Updated and refactored by someone.
-    Originally created by others.
-'''
 import re,urllib,urlparse,json,base64,time
 
 from resources.lib.modules import cleantitle

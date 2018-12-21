@@ -1,7 +1,6 @@
 # -*- coding: UTF-8 -*-
 
 
-
 import re
 import requests
 import traceback
@@ -24,6 +23,9 @@ class source:
         self.priority = 1
         self.language = ['en']
         self.domains = ['primewire.gr']
+        self.base_link = 'http://m.primewire.gr'        
+
+        # Use the **mobile** version of the website, a bit less traffic needed from them.
         self.BASE_URL = 'http://m.primewire.gr'
 
 
@@ -57,6 +59,9 @@ class source:
         try:
             seasonsPageURL = data['pageURL']
 
+            # An extra step needed before sources() can be called. Get the episode page.
+            # This code will crash if they change the website structure in the future.
+
             session = self._createSession(data['UA'], data['cookies'], data['referer'])
             xbmc.sleep(1000)
             r = self._sessionGET(seasonsPageURL, session)
@@ -64,6 +69,7 @@ class source:
                 soup = BeautifulSoup(r.content, 'html.parser')
                 mainDIV = soup.find('div', {'class': 'tv_container'})
                 firstEpisodeDIV = mainDIV.find('div', {'class': 'show_season', 'data-id': season})
+                # Filter the episode HTML entries to find the one that represents the episode we're after.
                 episodeDIV = next(
                     (
                         element for element in firstEpisodeDIV.next_siblings
@@ -100,16 +106,20 @@ class source:
             soup = BeautifulSoup(r.content, 'html.parser')
             mainDIV = soup.find('div', class_='actual_tab')
             for hostBlock in mainDIV.findAll('tbody'):
+
+                # All valid host links always have an 'onclick' attribute.
                 if 'onclick' in hostBlock.a.attrs:
                     onClick = hostBlock.a['onclick']
                     if 'Promo' in onClick:
-                        continue 
+                        continue # Ignore ad links.
 
                     hostName = re.search('''['"](.*?)['"]''', onClick).group(1)
                     qualityClass = hostBlock.span['class']
                     quality = 'SD' if ('cam' not in qualityClass and 'ts' not in qualityClass) else 'CAM'
+
+                    # Send data for the resolve() function below to use later, when the user plays an item.
                     unresolvedData = {
-                        'pageURL': self.BASE_URL + hostBlock.a['href'], 
+                        'pageURL': self.BASE_URL + hostBlock.a['href'], # Not yet usable, see resolve().
                         'UA': data['UA'],
                         'cookies': session.cookies.get_dict(),
                         'referer': pageURL
@@ -140,13 +150,15 @@ class source:
             r = self._sessionGET(data['pageURL'], session, allowRedirects=False)
             if r.ok:
                 if 'Location' in r.headers:
-                    hostURL = r.headers['Location'] 
+                    hostURL = r.headers['Location'] # For most hosts they redirect.
                 else:
-                   
+                    # On rare cases they JS-pack the host link in the page source.
                     try:
                         hostURL = re.search(r'''go\(\\['"](.*?)\\['"]\);''', jsunpack.unpack(r.text)).group(1)
                     except:
-                        pass
+                        pass # Or sometimes their page is just broken.
+
+            # Do a little delay, if necessary, between resolve() calls.
             elapsed = int((datetime.now() - startTime).total_seconds() * 1000)
             if elapsed < DELAY_PER_REQUEST:
                 xbmc.sleep(max(DELAY_PER_REQUEST - elapsed, 100))
@@ -169,11 +181,13 @@ class source:
             soup = BeautifulSoup(r.content, 'html.parser')
             mainDIV = soup.find('div', role='main')
             for resultDIV in mainDIV.findAll('div', {'class': 'index_item'}, recursive=False):
+                # Search result titles in Primewire.gr are usually "[Name of Movie/TVShow] (yyyy)".
+                # Example: 'Star Wars Legends: Legacy of the Force (2015)'
                 match = re.search(r'(.*?)(?:\s\((\d{4})\))?$', resultDIV.a['title'].lower().strip())
                 resultTitle, resultYear = match.groups()
                 if resultTitle in possibleTitles:
-                    if resultYear == year: 
-                        bestGuessesURLs.insert(0, resultDIV.a['href'])
+                    if resultYear == year: # 'resultYear' = '(yyyy)', with parenthesis.
+                        bestGuessesURLs.insert(0, resultDIV.a['href']) # Use year to make better guesses.
                     else:
                         bestGuessesURLs.append(resultDIV.a['href'])
 
@@ -199,6 +213,7 @@ class source:
 
 
     def _createSession(self, userAgent=None, cookies=None, referer=None):
+        # Try to spoof a header from a web browser.
         session = requests.Session()
         session.headers.update(
             {
@@ -220,7 +235,7 @@ class source:
 
 
     def _logException(self, text=None):
-        return 
+        return # Comment this line to output errors to the Kodi log, useful for debugging this script.
         if text:
             xbmc.log(text, xbmc.LOGERROR)
         else:

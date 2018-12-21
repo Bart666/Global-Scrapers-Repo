@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
 
-
 import json, urllib, urlparse
 
 from resources.lib.modules import client

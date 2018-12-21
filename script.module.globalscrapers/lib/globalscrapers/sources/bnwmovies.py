@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
 
-
 import re,traceback,urllib,urlparse,base64
 import requests
 
@@ -10,10 +9,10 @@ from resources.lib.modules import log_utils
 
 class source:
     def __init__(self):
-        self.priority = 0
+        self.priority = 1
         self.language = ['en']
         self.domains = ['www.bnwmovies.com']
-        self.base_link = 'http://www.bnwmovies.com'
+        self.base_link = 'http://www.bnwmovies.com/'
         self.search_link = '%s/search?q=bnwmovies.com+%s+%s'
         self.goog = 'https://www.google.co.uk'
 

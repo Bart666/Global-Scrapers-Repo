@@ -1,20 +1,18 @@
 # -*- coding: UTF-8 -*-
 
-
-import re,urllib,urlparse,httplib,json,xbmc
+import re,traceback,urllib,urlparse
 
 from resources.lib.modules import cleantitle
 from resources.lib.modules import client
 from resources.lib.modules import directstream
-from resources.lib.modules import source_utils
-from resources.lib.modules import cfscrape
+from resources.lib.modules import log_utils
 
 class source:
     def __init__(self):
         self.priority = 1
         self.language = ['en']
-        self.domains = ['seriesonline.io', 'www1.seriesonline.io', 'series9.io']
-        self.base_link = 'https://www2.series9.io'
+        self.domains = ['seriesonline.io','series9.io','gomovies.pet']
+        self.base_link = 'https://series9.co/'
         self.search_link = '/movie/search/%s'
 
     def matchAlias(self, title, aliases):
@@ -32,7 +30,9 @@ class source:
             url = urllib.urlencode(url)
             return url
         except:
-            return
+            failure = traceback.format_exc()
+            log_utils.log('Series9 - Exception: \n' + str(failure))
+            return  
 
     def tvshow(self, imdb, tvdb, tvshowtitle, localtvshowtitle, aliases, year):
         try:
@@ -41,7 +41,9 @@ class source:
             url = urllib.urlencode(url)
             return url
         except:
-            return
+            failure = traceback.format_exc()
+            log_utils.log('Series9 - Exception: \n' + str(failure))
+            return  
 
     def episode(self, url, imdb, tvdb, title, premiered, season, episode):
         try:
@@ -52,7 +54,9 @@ class source:
             url = urllib.urlencode(url)
             return url
         except:
-            return
+            failure = traceback.format_exc()
+            log_utils.log('Series9 - Exception: \n' + str(failure))
+            return  
 
     def searchShow(self, title, season, aliases, headers):
         try:
@@ -68,7 +72,9 @@ class source:
             url = urlparse.urljoin(self.base_link, '%s/watching.html' % url)
             return url
         except:
-            return
+            failure = traceback.format_exc()
+            log_utils.log('Series9 - Exception: \n' + str(failure))
+            return  
 
     def searchMovie(self, title, year, aliases, headers):
         try:
@@ -89,10 +95,11 @@ class source:
                 url = [i[0] for i in results if self.matchAlias(i[1], aliases)][0]
 
             url = urlparse.urljoin(self.base_link, '%s/watching.html' % url)
-
             return url
         except:
-            return
+            failure = traceback.format_exc()
+            log_utils.log('Series9 - Exception: \n' + str(failure))
+            return  
 
     def sources(self, url, hostDict, hostprDict):
         try:
@@ -147,6 +154,8 @@ class source:
 
             return sources
         except:
+            failure = traceback.format_exc()
+            log_utils.log('Series9 - Exception: \n' + str(failure))
             return sources
 
     def resolve(self, url):
@@ -154,3 +163,5 @@ class source:
             return directstream.googlepass(url)
         else:
             return url
+
+

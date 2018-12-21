@@ -1,6 +1,4 @@
-# -*- coding: UTF-8 -*-
-
-
+# -*- coding: utf-8 -*-
 
 import re,urllib,urlparse,json,base64
 
@@ -80,6 +78,7 @@ class source:
                     r = re.compile('href="([^"]+)"\s+class="action-btn').findall(result2)[0]
                     valid, hoster = source_utils.is_host_valid(r, hostDict)
                     if not valid: continue
+                    #log_utils.log('JairoxDebug1: %s - %s' % (url2,r), log_utils.LOGDEBUG)
                     urls, host, direct = source_utils.check_directstreams(r, hoster)
                     for x in urls: sources.append({'source': host, 'quality': x['quality'], 'language': 'en', 'url': x['url'], 'direct': direct, 'debridonly': False})
                     
@@ -87,6 +86,7 @@ class source:
                     #traceback.print_exc()
                     pass           
                     
+            #log_utils.log('JairoxDebug2: %s' % (str(sources)), log_utils.LOGDEBUG)
             return sources
         except:
             return sources

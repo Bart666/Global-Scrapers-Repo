@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
 
-
 import re,urllib,urlparse,time,json
 
 from resources.lib.modules import control
@@ -13,7 +12,7 @@ class source:
         self.priority = 1
         self.language = ['en']
         self.domains = ['gowatchseries.io','gowatchseries.co']
-        self.base_link = 'https://ww5.gowatchseries.co'
+        self.base_link = 'https://ww2.gowatchseries.co'
         self.search_link = '/ajax-search.html?keyword=%s&id=-1'
         self.search_link2 = '/search.html?keyword=%s'
 

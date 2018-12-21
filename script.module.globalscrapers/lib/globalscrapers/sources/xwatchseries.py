@@ -1,11 +1,5 @@
 # -*- coding: UTF-8 -*-
-'''
-    xwatchseries scraper for resistance.
-    Nov 9 2018 - Checked
 
-    Updated and refactored by someone.
-    Originally created by others.
-'''
 import re,traceback,urllib,urlparse,json
 
 from resources.lib.modules import cleantitle

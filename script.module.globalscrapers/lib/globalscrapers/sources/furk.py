@@ -1,11 +1,5 @@
 # -*- coding: UTF-8 -*-
-'''
-    furk scraper for resistance.
-    Nov 9 2018 - Checked
 
-    Updated and refactored by someone.
-    Originally created by others.
-'''
 import requests, json, sys
 from resources.lib.modules import source_utils, cleantitle, control
 

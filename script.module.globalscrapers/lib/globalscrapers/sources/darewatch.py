@@ -1,13 +1,13 @@
 # -*- coding: UTF-8 -*-
 
-
 import re
 import base64
 import requests
 from time import time
+
 import xbmc
+
 from resources.lib.modules import client
-from resources.lib.modules import directstream
 
 
 class source:
@@ -19,6 +19,7 @@ class source:
         self.search_link = self.base_link + '/ajax/search.php'
         self.ua = client.randomagent()
 
+        # Search headers for 'http://www.dailytvfix/ajax/search.php'.
         self.search_headers = {
             'Host': self.base_link.replace('http://', '', 1),
             'User-Agent': self.ua,
@@ -30,6 +31,7 @@ class source:
             'X-Requested-With': 'XMLHttpRequest',
             'DNT': '1'
         }
+
 
     def movie(self, imdb, title, localtitle, aliases, year):
         try:
@@ -47,6 +49,7 @@ class source:
             self._error(repr(e))
             return None
 
+
     def tvshow(self, imdb, tvdb, tvshowtitle, localtvshowtitle, aliases, year):
         try:
             tvshowtitle = tvshowtitle.lower()
@@ -61,6 +64,8 @@ class source:
                     if entry_title_lower in possible_titles:
                         best_guesses.append(entry['permalink'])
                     elif tvshowtitle in entry_title_lower and year in entry_title_lower:
+                        # For special cases like 'The Flash' vs 'The Flash 2014', make the entry
+                        # that matches the most (including year) be prepended.
                         best_guesses.insert(0, entry['permalink'])
             if best_guesses:
                 url = self.base_link + best_guesses[0]
@@ -69,18 +74,22 @@ class source:
             self._error(repr(e))
             return None
 
+
     def episode(self, url, imdb, tvdb, title, premiered, season, episode):
         return url + '/season/%s/episode/%s' % (season, episode)
+
 
     def sources(self, url, hostDict, hostprDict):
         sources = [ ]
 
         try:
+            # If in the future there's a Cloudflare challenge, use client.request() instead.
             r = requests.get(url, headers={'User-Agent': self.ua}, timeout=10)
         except:
             r = type('FailedResponse', (object,), {'ok': False})
 
-        openload_limit = 10
+        # On some movies there's like 20+ Openload links, most of the time there's no need for so many.
+        openload_limit = 5 # Set this as the maximum amount of Openload links obtained from Darewatch.
 
         if r.ok:
             match = re.findall("] = '(.+?)'", r.text, re.DOTALL)
@@ -93,6 +102,9 @@ class source:
                     continue
 
                 if 'openload' in host_url:
+                    # Avoids some duplicate Openload links, both of these come up:
+                    # https://openload.co/embed/dVdG-TGRkZc/Ready.Player.One.2018.(...)
+                    # https://openload.co/embed/dVdG-TGRkZc
                     is_duplicate = next(
                         (
                             True
@@ -103,10 +115,10 @@ class source:
                         False
                     )
                     if is_duplicate or openload_limit < 1:
-                        continue
+                        continue # Skip this source.
                     else:
                         quality = 'HD'
-                        openload_limit -= 1
+                        openload_limit -= 1 # Count towards the Openload links limit.
                 else:
                     quality = 'SD'
 
@@ -124,11 +136,13 @@ class source:
                 )
         return sources
 
+
     def resolve(self, url):
         if "google" in url:
             return directstream.googlepass(url)
         else:
             return url
+
 
     def _ajax_post(self, query):
         try:
@@ -143,8 +157,10 @@ class source:
         else:
             return ()
 
+
     def _error(self, e):
         xbmc.log('DAREWATCH Error > ' + repr(e), xbmc.LOGERROR)
+
 
     def _debug(self, name, val):
         xbmc.log('DAREWATCH Debug > %s %s' % (name, repr(val)), xbmc.LOGWARNING)

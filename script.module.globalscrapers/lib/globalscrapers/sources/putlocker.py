@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
 
-
 import re
 import urllib
 import urlparse
@@ -14,7 +13,7 @@ class source:
         self.priority = 1
         self.language = ['en']
         self.domains = ['putlockerr.is','putlockers.movie'] 
-        self.base_link = 'https://www5.putlockerr.is'
+        self.base_link = 'https://putlockerr.is'
         self.search_link = '/embed/%s/'
 
     def movie(self, imdb, title, localtitle, aliases, year):
@@ -23,7 +22,7 @@ class source:
             return url
         except:
             return
-
+		
     def sources(self, url, hostDict, hostprDict):
         try:
             sources = []
